@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thư Viện Pháp Luật – Đăng Ký Doanh Nghiệp</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #c0392b;
+    --gold: #b8860b;
+    --ink: #1a1a2e;
+    --paper: #faf8f3;
+    --cream: #f4f0e6;
+    --border: #d4c5a9;
+    --muted: #7a6f5d;
+    --green: #1a6b3a;
+    --sidebar-w: 280px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Be Vietnam Pro', sans-serif; background: var(--paper); color: var(--ink); display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: var(--sidebar-w); background: var(--ink); color: #e8e0d0; display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; transition: transform .3s;
+  }
+  .sidebar-logo { padding: 24px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-logo h1 { font-family: 'Playfair Display', serif; font-size: 16px; color: #f0e8c8; line-height: 1.3; }
+  .sidebar-logo p { font-size: 10px; color: #8a7f6e; margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
+  .nav-section { padding: 16px 0; }
+  .nav-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #6a5f4e; padding: 0 20px 8px; }
+  .nav-btn { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 10px 20px;
+    background: none; border: none; color: #c8bfaf; font-size: 13px; cursor: pointer; transition: all .15s; font-family: 'Be Vietnam Pro', sans-serif; }
+  .nav-btn:hover { background: rgba(255,255,255,0.07); color: #f0e8c8; }
+  .nav-btn.active { background: rgba(192,57,43,0.2); color: #e8a090; border-left: 3px solid var(--red); }
+  .nav-btn .icon { font-size: 15px; width: 20px; }
+
+  /* MAIN */
+  #main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+  .topbar { background: white; border-bottom: 1px solid var(--border); padding: 14px 28px; display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 50; }
+  .topbar-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .topbar-badge { font-size: 10px; background: var(--red); color: white; padding: 2px 8px; border-radius: 20px; }
+  .content { padding: 28px; flex: 1; }
+
+  /* CARDS */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* SEARCH PAGE */
+  .search-hero { background: linear-gradient(135deg, var(--ink) 0%, #2d1b1b 100%); color: white; border-radius: 12px; padding: 32px; margin-bottom: 24px; position: relative; overflow: hidden; }
+  .search-hero::before { content: '⚖'; position: absolute; right: 24px; top: 50%; transform: translateY(-50%); font-size: 80px; opacity: 0.05; }
+  .search-hero h2 { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 8px; color: #f0e8c8; }
+  .search-hero p { font-size: 13px; color: #9a8f7e; margin-bottom: 20px; }
+  .search-box { display: flex; gap: 8px; }
+  .search-box input { flex: 1; padding: 12px 16px; border-radius: 8px; border: none; font-size: 14px; font-family: 'Be Vietnam Pro', sans-serif; background: rgba(255,255,255,0.95); }
+  .search-box input:focus { outline: 2px solid var(--gold); }
+  .search-box button { background: var(--red); color: white; border: none; border-radius: 8px; padding: 12px 20px; cursor: pointer; font-weight: 600; font-size: 13px; font-family: 'Be Vietnam Pro', sans-serif; }
+
+  .quick-topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .topic-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 16px; cursor: pointer; transition: all .2s; }
+  .topic-card:hover { border-color: var(--red); box-shadow: 0 4px 16px rgba(192,57,43,0.1); transform: translateY(-2px); }
+  .topic-card .icon { font-size: 22px; margin-bottom: 8px; }
+  .topic-card h3 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .topic-card p { font-size: 11px; color: var(--muted); }
+
+  /* ANSWER BOX */
+  #answer-box { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 24px; display: none; }
+  #answer-box .answer-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--cream); }
+  #answer-box .answer-header span { font-size: 18px; }
+  #answer-box .answer-header h3 { font-size: 15px; font-weight: 600; }
+  #answer-content { font-size: 13.5px; line-height: 1.8; color: #333; }
+  #answer-content h4 { font-size: 14px; font-weight: 600; color: var(--red); margin: 16px 0 6px; }
+  #answer-content ul { padding-left: 20px; }
+  #answer-content li { margin-bottom: 6px; }
+  #answer-content .law-ref { display: inline-block; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 2px 8px; font-size: 11px; margin: 2px; color: #856404; cursor: pointer; }
+  #answer-content .law-ref:hover { background: #ffc107; }
+  .loading-dots { display: flex; gap: 6px; align-items: center; padding: 12px 0; }
+  .loading-dots span { width: 8px; height: 8px; background: var(--red); border-radius: 50%; animation: bounce 1.2s infinite; }
+  .loading-dots span:nth-child(2) { animation-delay: .2s; }
+  .loading-dots span:nth-child(3) { animation-delay: .4s; }
+  @keyframes bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
+
+  /* FORMS PAGE */
+  .forms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .form-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 18px; cursor: pointer; transition: all .2s; position: relative; }
+  .form-card:hover { border-color: var(--green); box-shadow: 0 4px 16px rgba(26,107,58,0.1); transform: translateY(-2px); }
+  .form-card .mau-so { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
+  .form-card h3 { font-size: 12.5px; font-weight: 600; line-height: 1.4; color: var(--ink); }
+  .form-card .tag { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 20px; margin-top: 8px; }
+  .tag-dn { background: #dff0d8; color: #2d6a2d; }
+  .tag-hkd { background: #d0e8f5; color: #1a5276; }
+  .tag-cq { background: #fce8e8; color: #922b21; }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .section-header h2 { font-size: 16px; font-weight: 700; }
+  .section-header .count { font-size: 11px; color: var(--muted); background: var(--cream); padding: 2px 10px; border-radius: 20px; }
+  .filter-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .filter-tab { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: white; font-size: 12px; cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif; transition: all .15s; }
+  .filter-tab.active { background: var(--ink); color: white; border-color: var(--ink); }
+
+  /* FORM FILL MODAL */
+  #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+  #modal-overlay.open { display: flex; }
+  #modal { background: white; border-radius: 14px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+  .modal-header { background: var(--ink); color: white; padding: 20px 24px; display: flex; justify-content: space-between; align-items: flex-start; }
+  .modal-header h2 { font-family: 'Playfair Display', serif; font-size: 16px; color: #f0e8c8; }
+  .modal-header p { font-size: 11px; color: #8a7f6e; margin-top: 4px; }
+  .modal-close { background: none; border: none; color: #8a7f6e; font-size: 22px; cursor: pointer; line-height: 1; }
+  .modal-body { flex: 1; overflow-y: auto; padding: 24px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; background: var(--paper); }
+
+  /* FORM FIELDS */
+  .field-group { margin-bottom: 20px; }
+  .field-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; color: var(--ink); }
+  .field-group label .req { color: var(--red); margin-left: 2px; }
+  .field-group label .hint { font-weight: 400; color: var(--muted); font-size: 11px; display: block; margin-top: 2px; }
+  .field-group input, .field-group select, .field-group textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px;
+    font-size: 13px; font-family: 'Be Vietnam Pro', sans-serif; background: white; color: var(--ink);
+    transition: border .15s;
+  }
+  .field-group input:focus, .field-group select:focus, .field-group textarea:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(26,107,58,0.08); }
+  .field-group textarea { min-height: 80px; resize: vertical; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .section-divider { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--red); padding: 4px 0 12px; border-bottom: 2px solid var(--cream); margin-bottom: 16px; margin-top: 8px; }
+  .checkbox-group { display: flex; flex-direction: column; gap: 8px; }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+  .checkbox-row input[type=checkbox], .checkbox-row input[type=radio] { width: 16px; height: 16px; accent-color: var(--green); cursor: pointer; }
+  .note-box { background: #fff8e1; border: 1px solid #ffc107; border-radius: 6px; padding: 12px; font-size: 12px; color: #7d5900; margin-bottom: 16px; }
+  .note-box strong { display: block; margin-bottom: 4px; }
+
+  /* TABLE IN FORM */
+  .mini-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+  .mini-table th { background: var(--cream); padding: 8px; text-align: left; border: 1px solid var(--border); font-weight: 600; }
+  .mini-table td { padding: 6px 8px; border: 1px solid var(--border); }
+  .mini-table input { border: none; width: 100%; padding: 2px 4px; font-size: 12px; font-family: 'Be Vietnam Pro', sans-serif; }
+  .mini-table input:focus { outline: 1px solid var(--green); border-radius: 2px; }
+
+  /* PREVIEW */
+  #preview-section { background: #f0f4f0; border: 2px solid var(--green); border-radius: 8px; padding: 20px; display: none; }
+  #preview-section h4 { color: var(--green); font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+  #preview-content { font-size: 12.5px; line-height: 1.8; white-space: pre-wrap; font-family: monospace; color: #1a1a1a; }
+
+  /* BUTTONS */
+  .btn { padding: 10px 20px; border-radius: 7px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif; transition: all .2s; }
+  .btn-primary { background: var(--green); color: white; }
+  .btn-primary:hover { background: #145a30; }
+  .btn-red { background: var(--red); color: white; }
+  .btn-red:hover { background: #a93226; }
+  .btn-outline { background: white; border: 1px solid var(--border); color: var(--ink); }
+  .btn-outline:hover { border-color: var(--ink); }
+  .btn-gold { background: var(--gold); color: white; }
+  .btn-gold:hover { background: #9a7209; }
+
+  /* DOCS PAGE */
+  .doc-list { display: flex; flex-direction: column; gap: 10px; }
+  .doc-item { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; cursor: pointer; transition: all .2s; }
+  .doc-item:hover { border-color: var(--gold); box-shadow: 0 2px 12px rgba(184,134,11,0.1); }
+  .doc-item .doc-icon { font-size: 28px; flex-shrink: 0; }
+  .doc-item h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .doc-item p { font-size: 12px; color: var(--muted); }
+  .doc-item .doc-meta { margin-left: auto; text-align: right; font-size: 11px; color: var(--muted); }
+  .doc-detail { display: none; background: white; border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-top: 16px; }
+  .doc-detail.open { display: block; }
+  .doc-detail h3 { font-family: 'Playfair Display', serif; font-size: 18px; margin-bottom: 16px; color: var(--ink); }
+  .law-article { margin-bottom: 16px; padding: 14px; background: var(--paper); border-left: 3px solid var(--gold); border-radius: 4px; }
+  .law-article h4 { font-size: 13px; font-weight: 700; color: var(--red); margin-bottom: 6px; }
+  .law-article p { font-size: 13px; line-height: 1.7; color: #333; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); }
+    #main { margin-left: 0; }
+    .field-row, .field-row-3 { grid-template-columns: 1fr; }
+  }
+
+  /* PRINT STYLES */
+  @media print {
+    #sidebar, .topbar, .modal-footer, .btn { display: none !important; }
+    #main { margin-left: 0; }
+    #preview-section { display: block !important; border: none; background: white; }
+  }
+
+  .badge-new { background: #c0392b; color: white; font-size: 9px; padding: 1px 5px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }
+  .ai-badge { background: linear-gradient(90deg, #1a6b3a, #b8860b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <h1>⚖ Thư Viện<br>Pháp Luật DN</h1>
+    <p>TT 68/2025 · NĐ 168/2025</p>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Tra cứu</div>
+    <button class="nav-btn active" onclick="showPage('search')" id="nav-search">
+      <span class="icon">🔍</span> Hỏi đáp pháp luật
+    </button>
+    <button class="nav-btn" onclick="showPage('docs')" id="nav-docs">
+      <span class="icon">📚</span> Văn bản pháp quy
+    </button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Biểu mẫu</div>
+    <button class="nav-btn" onclick="showPage('forms')" id="nav-forms">
+      <span class="icon">📋</span> Tất cả biểu mẫu
+      <span class="badge-new">88</span>
+    </button>
+    <button class="nav-btn" onclick="filterAndShow('dn')" id="nav-dn">
+      <span class="icon">🏢</span> Đăng ký DN
+    </button>
+    <button class="nav-btn" onclick="filterAndShow('hkd')" id="nav-hkd">
+      <span class="icon">🏪</span> Hộ kinh doanh
+    </button>
+    <button class="nav-btn" onclick="filterAndShow('cq')" id="nav-cq">
+      <span class="icon">🏛</span> Cơ quan cấp
+    </button>
+  </div>
+  <div style="margin-top: auto; padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08);">
+    <div style="font-size: 10px; color: #5a5040; line-height: 1.6;">
+      Hiệu lực từ 01/07/2025<br>
+      TT 68/2025/TT-BTC<br>
+      NĐ 168/2025/NĐ-CP<br>
+      Luật DN 2020 (sửa 2025)
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div id="main">
+  <div class="topbar">
+    <span style="font-size: 20px;">⚖️</span>
+    <span class="topbar-title" id="topbar-title">Hỏi đáp pháp luật doanh nghiệp</span>
+    <span class="topbar-badge" id="topbar-badge">AI Hỗ trợ</span>
+  </div>
+
+  <div class="content">
+
+    <!-- SEARCH PAGE -->
+    <div class="page active" id="page-search">
+      <div class="search-hero">
+        <h2>Tra cứu pháp luật doanh nghiệp</h2>
+        <p>Đặt câu hỏi về đăng ký doanh nghiệp, hộ kinh doanh, thủ tục, biểu mẫu...</p>
+        <div class="search-box">
+          <input id="search-input" type="text" placeholder="Ví dụ: Thủ tục thành lập công ty TNHH một thành viên cần những gì?"
+            onkeydown="if(event.key==='Enter') doSearch()">
+          <button onclick="doSearch()">Hỏi AI ▶</button>
+        </div>
+      </div>
+
+      <div id="answer-box">
+        <div class="answer-header">
+          <span>🤖</span>
+          <h3 class="ai-badge">Trả lời từ văn bản pháp luật</h3>
+        </div>
+        <div id="answer-content"></div>
+      </div>
+
+      <div style="margin-bottom: 14px; font-size: 13px; font-weight: 600; color: var(--muted);">Câu hỏi thường gặp</div>
+      <div class="quick-topics">
+        <div class="topic-card" onclick="askQuestion('Điều kiện thành lập doanh nghiệp tư nhân là gì?')">
+          <div class="icon">🏭</div>
+          <h3>DNTN - Điều kiện thành lập</h3>
+          <p>Ai được quyền thành lập? Hồ sơ gồm gì?</p>
+        </div>
+        <div class="topic-card" onclick="askQuestion('Công ty TNHH 1 thành viên khác gì công ty TNHH 2 thành viên?')">
+          <div class="icon">⚖️</div>
+          <h3>So sánh loại hình DN</h3>
+          <p>TNHH 1TV vs 2TV vs Cổ phần</p>
+        </div>
+        <div class="topic-card" onclick="askQuestion('Biểu mẫu nào dùng để đăng ký thay đổi người đại diện theo pháp luật?')">
+          <div class="icon">📋</div>
+          <h3>Thay đổi đại diện PL</h3>
+          <p>Mẫu nào? Thủ tục như thế nào?</p>
+        </div>
+        <div class="topic-card" onclick="askQuestion('Hộ kinh doanh cần điều kiện gì để đăng ký? Mẫu đơn nào?')">
+          <div class="icon">🏪</div>
+          <h3>Hộ kinh doanh</h3>
+          <p>Thủ tục đăng ký hộ kinh doanh</p>
+        </div>
+        <div class="topic-card" onclick="askQuestion('Thủ tục tạm ngừng kinh doanh theo NĐ 168/2025?')">
+          <div class="icon">⏸️</div>
+          <h3>Tạm ngừng kinh doanh</h3>
+          <p>Điều kiện, thủ tục, biểu mẫu</p>
+        </div>
+        <div class="topic-card" onclick="askQuestion('Chủ sở hữu hưởng lợi của doanh nghiệp là gì? Kê khai như thế nào?')">
+          <div class="icon">👤</div>
+          <h3>Chủ sở hữu hưởng lợi</h3>
+          <p>Quy định mới theo NĐ 168/2025</p>
+        </div>
+        <div class="topic-card" onclick="askQuestion('Thủ tục giải thể doanh nghiệp cần biểu mẫu gì?')">
+          <div class="icon">🚪</div>
+          <h3>Giải thể doanh nghiệp</h3>
+          <p>Điều kiện, hồ sơ, quy trình</p>
+        </div>
+        <div class="topic-card" onclick="askQuestion('Đăng ký chi nhánh văn phòng đại diện cần làm gì?')">
+          <div class="icon">🏬</div>
+          <h3>Chi nhánh / VPĐD</h3>
+          <p>Đăng ký hoạt động, thay đổi</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORMS PAGE -->
+    <div class="page" id="page-forms">
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="filterForms('all', this)">Tất cả (88 mẫu)</button>
+        <button class="filter-tab" onclick="filterForms('dn', this)">📋 Đăng ký DN (80 mẫu)</button>
+        <button class="filter-tab" onclick="filterForms('hkd', this)">🏪 Hộ KD (28 mẫu)</button>
+        <button class="filter-tab" onclick="filterForms('nguoi-nop', this)">Người nộp lập</button>
+        <button class="filter-tab" onclick="filterForms('co-quan', this)">Cơ quan ban hành</button>
+      </div>
+      <div class="forms-grid" id="forms-grid"></div>
+    </div>
+
+    <!-- DOCS PAGE -->
+    <div class="page" id="page-docs">
+      <div class="section-header">
+        <h2>📚 Văn bản pháp luật</h2>
+        <span class="count">4 văn bản</span>
+      </div>
+      <div class="doc-list">
+        <div class="doc-item" onclick="toggleDoc('doc1')">
+          <span class="doc-icon">📜</span>
+          <div>
+            <h3>Luật Doanh nghiệp 2020 (sửa đổi 2025)</h3>
+            <p>Số: 59/2020/QH14 · Quốc hội ban hành ngày 17/6/2020, sửa đổi 17/6/2025</p>
+          </div>
+          <div class="doc-meta">Luật cơ bản<br><span style="color:var(--green)">● Hiệu lực</span></div>
+        </div>
+        <div class="doc-detail" id="doc1">
+          <h3>Luật Doanh nghiệp – Các điều khoản then chốt</h3>
+          <div class="law-article">
+            <h4>Điều 17 – Quyền thành lập, góp vốn, mua cổ phần, mua phần vốn góp</h4>
+            <p>Tổ chức, cá nhân có quyền thành lập và quản lý doanh nghiệp tại Việt Nam theo quy định của Luật này, trừ những đối tượng bị cấm tại Điều 18.</p>
+          </div>
+          <div class="law-article">
+            <h4>Điều 18 – Tổ chức, cá nhân không có quyền thành lập và quản lý DN</h4>
+            <p>Cơ quan nhà nước, đơn vị vũ trang nhân dân; cán bộ, công chức, viên chức; người chưa thành niên; người bị tòa tuyên bố mất năng lực hành vi; người bị cấm kinh doanh; và các đối tượng khác theo quy định.</p>
+          </div>
+          <div class="law-article">
+            <h4>Điều 22 – Quyền và nghĩa vụ của doanh nghiệp</h4>
+            <p>Doanh nghiệp có quyền tự do kinh doanh trong ngành nghề mà pháp luật không cấm; lựa chọn hình thức, phương thức huy động, phân bổ và sử dụng vốn; chủ động ứng dụng khoa học và công nghệ...</p>
+          </div>
+        </div>
+
+        <div class="doc-item" onclick="toggleDoc('doc2')">
+          <span class="doc-icon">📋</span>
+          <div>
+            <h3>Nghị định 168/2025/NĐ-CP về đăng ký doanh nghiệp</h3>
+            <p>Số: 168/2025/NĐ-CP · Chính phủ ban hành ngày 30/6/2025</p>
+          </div>
+          <div class="doc-meta">Nghị định<br><span style="color:var(--green)">● Hiệu lực</span></div>
+        </div>
+        <div class="doc-detail" id="doc2">
+          <h3>NĐ 168/2025 – Quy định về đăng ký doanh nghiệp</h3>
+          <div class="law-article">
+            <h4>Điều 1 – Phạm vi điều chỉnh</h4>
+            <p>Nghị định quy định về hồ sơ, trình tự, thủ tục đăng ký doanh nghiệp; quy định về đăng ký và hoạt động của hộ kinh doanh; liên thông thủ tục đăng ký qua mạng điện tử; cung cấp, khai thác thông tin đăng ký doanh nghiệp.</p>
+          </div>
+          <div class="law-article">
+            <h4>Điều 2 – Đối tượng áp dụng</h4>
+            <p>Tổ chức, cá nhân trong nước; tổ chức, cá nhân nước ngoài thực hiện đăng ký doanh nghiệp, đăng ký hộ kinh doanh theo quy định của pháp luật Việt Nam.</p>
+          </div>
+          <div class="law-article">
+            <h4>Quy định về chủ sở hữu hưởng lợi (mới)</h4>
+            <p>NĐ 168/2025 bổ sung yêu cầu doanh nghiệp kê khai thông tin chủ sở hữu hưởng lợi khi đăng ký (Mẫu số 10, 11 – Phụ lục I). Đây là quy định mới nhằm tăng cường minh bạch sở hữu.</p>
+          </div>
+        </div>
+
+        <div class="doc-item" onclick="toggleDoc('doc3')">
+          <span class="doc-icon">📑</span>
+          <div>
+            <h3>Thông tư 68/2025/TT-BTC – Biểu mẫu đăng ký DN và HKD</h3>
+            <p>Số: 68/2025/TT-BTC · Bộ Tài chính ban hành ngày 01/7/2025</p>
+          </div>
+          <div class="doc-meta">Thông tư<br><span style="color:var(--green)">● Hiệu lực</span></div>
+        </div>
+        <div class="doc-detail" id="doc3">
+          <h3>TT 68/2025 – Thay thế TT 01/2021 và TT 02/2023</h3>
+          <div class="law-article">
+            <h4>Điều 1 – Phạm vi & Đối tượng</h4>
+            <p>Ban hành biểu mẫu sử dụng trong đăng ký doanh nghiệp và đăng ký hộ kinh doanh, áp dụng theo Điều 2 NĐ 168/2025/NĐ-CP.</p>
+          </div>
+          <div class="law-article">
+            <h4>Điều 2 – Hệ thống biểu mẫu</h4>
+            <p>Phụ lục I: 80 mẫu đăng ký doanh nghiệp (Mẫu 1–80). Phụ lục II: 28 mẫu đăng ký hộ kinh doanh (Mẫu 1–28).</p>
+          </div>
+          <div class="law-article">
+            <h4>Điều 3 – Hiệu lực & Bãi bỏ</h4>
+            <p>Có hiệu lực từ 01/7/2025. Bãi bỏ: TT 01/2021/TT-BKHĐT và TT 02/2023/TT-BKHĐT và một số biểu mẫu theo TT 43/2025/TT-BTC.</p>
+          </div>
+        </div>
+
+        <div class="doc-item" onclick="toggleDoc('doc4')">
+          <span class="doc-icon">📊</span>
+          <div>
+            <h3>QĐ 36/2025/QĐ-TTg – Mã ngành kinh tế Việt Nam</h3>
+            <p>Hệ thống ngành kinh tế Việt Nam (VSIC) dùng để kê khai ngành nghề kinh doanh</p>
+          </div>
+          <div class="doc-meta">Quyết định<br><span style="color:var(--green)">● Hiệu lực</span></div>
+        </div>
+        <div class="doc-detail" id="doc4">
+          <h3>QĐ 36/2025 – Hệ thống ngành kinh tế Việt Nam</h3>
+          <div class="law-article">
+            <h4>Cách kê khai ngành nghề trong biểu mẫu</h4>
+            <p>Khi điền Mẫu đăng ký doanh nghiệp, phần "Ngành nghề kinh doanh" phải ghi đúng tên ngành và mã ngành cấp 4 theo Hệ thống ngành kinh tế của Việt Nam ban hành tại QĐ này. Ví dụ: Bán buôn đồ điện dân dụng (mã 4649).</p>
+          </div>
+          <div class="law-article">
+            <h4>Phân loại ngành cấp</h4>
+            <p>Ngành cấp 1 (1 chữ số A-U) → Cấp 2 (2 chữ số) → Cấp 3 (3 chữ số) → Cấp 4 (4 chữ số). Biểu mẫu yêu cầu kê khai ở mức cấp 4 (chi tiết nhất).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- FORM FILL MODAL -->
+<div id="modal-overlay">
+  <div id="modal">
+    <div class="modal-header">
+      <div>
+        <h2 id="modal-title">Mẫu số 1 – Giấy đề nghị đăng ký DN tư nhân</h2>
+        <p id="modal-subtitle">TT 68/2025/TT-BTC · Phụ lục I</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Đóng</button>
+      <button class="btn btn-gold" onclick="previewForm()">👁 Xem trước</button>
+      <button class="btn btn-primary" onclick="generateDoc()">⬇ Tạo văn bản Word</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA: ALL FORMS from TT 68/2025 (extracted from actual docs)
+// ============================================================
+const FORMS = [
+  // PHU LUC I - DANG KY DOANH NGHIEP
+  { id:'pl1-1', mau:'Mẫu số I.1', ten:'Giấy đề nghị đăng ký doanh nghiệp – Doanh nghiệp tư nhân', luc:'I', cat:'nguoi-nop', type:'dn', fillable:true },
+  { id:'pl1-2', mau:'Mẫu số I.2', ten:'Giấy đề nghị đăng ký doanh nghiệp – Công ty TNHH một thành viên', luc:'I', cat:'nguoi-nop', type:'dn', fillable:true },
+  { id:'pl1-3', mau:'Mẫu số I.3', ten:'Giấy đề nghị đăng ký doanh nghiệp – Công ty TNHH hai thành viên trở lên', luc:'I', cat:'nguoi-nop', type:'dn', fillable:true },
+  { id:'pl1-4', mau:'Mẫu số I.4', ten:'Giấy đề nghị đăng ký doanh nghiệp – Công ty cổ phần', luc:'I', cat:'nguoi-nop', type:'dn', fillable:true },
+  { id:'pl1-5', mau:'Mẫu số I.5', ten:'Giấy đề nghị đăng ký doanh nghiệp – Công ty hợp danh', luc:'I', cat:'nguoi-nop', type:'dn', fillable:true },
+  { id:'pl1-6', mau:'Mẫu số I.6', ten:'Danh sách thành viên công ty TNHH hai thành viên trở lên', luc:'I', cat:'nguoi-nop', type:'dn', fillable:true },
+  { id:'pl1-7', mau:'Mẫu số I.7', ten:'Danh sách cổ đông sáng lập công ty cổ phần', luc:'I', cat:'nguoi-nop', type:'dn', fillable:true },
+  { id:'pl1-8', mau:'Mẫu số I.8', ten:'Danh sách cổ đông là nhà đầu tư nước ngoài', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-9', mau:'Mẫu số I.9', ten:'Danh sách thành viên công ty hợp danh', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-10', mau:'Mẫu số I.10', ten:'Danh sách chủ sở hữu hưởng lợi của doanh nghiệp', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-11', mau:'Mẫu số I.11', ten:'Kê khai thông tin để xác định chủ sở hữu hưởng lợi của doanh nghiệp', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-12', mau:'Mẫu số I.12', ten:'Giấy đề nghị đăng ký thay đổi nội dung GCNĐKDN / Thông báo thay đổi nội dung đăng ký DN', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-13', mau:'Mẫu số I.13', ten:'Giấy đề nghị đăng ký thay đổi người đại diện theo pháp luật', luc:'I', cat:'nguoi-nop', type:'dn', fillable:true },
+  { id:'pl1-14', mau:'Mẫu số I.14', ten:'Giấy đề nghị đăng ký thay đổi chủ doanh nghiệp tư nhân', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-15', mau:'Mẫu số I.15', ten:'Giấy đề nghị đăng ký thay đổi chủ sở hữu công ty TNHH một thành viên', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-16', mau:'Mẫu số I.16', ten:'Thông báo về việc cho thuê doanh nghiệp tư nhân', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-17', mau:'Mẫu số I.17', ten:'Giấy đề nghị đăng ký hoạt động chi nhánh/văn phòng đại diện/Thông báo lập địa điểm kinh doanh', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-18', mau:'Mẫu số I.18', ten:'Thông báo về việc lập chi nhánh/văn phòng đại diện ở nước ngoài', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-19', mau:'Mẫu số I.19', ten:'Giấy đề nghị đăng ký thay đổi nội dung đăng ký hoạt động CN/VPĐD/địa điểm KD', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-20', mau:'Mẫu số I.20', ten:'Thông báo về việc phản hồi kết quả rà soát thông tin đăng ký DN, tình trạng pháp lý', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-21', mau:'Mẫu số I.21', ten:'Giấy đề nghị cấp đổi sang GCNĐKDN (từ GCNĐKKD hoặc GCNĐKKD và đăng ký thuế)', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-22', mau:'Mẫu số I.22', ten:'Giấy đề nghị bổ sung, cập nhật thông tin ĐKDN (DN theo Giấy phép đầu tư)', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-23', mau:'Mẫu số I.23', ten:'Giấy đề nghị bổ sung, cập nhật thông tin đăng ký hoạt động CN/VPĐD/địa điểm KD (Giấy phép đầu tư)', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-24', mau:'Mẫu số I.24', ten:'Giấy đề nghị bổ sung, cập nhật thông tin ĐKDN (Giấy phép thành lập và hoạt động KD chứng khoán)', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-25', mau:'Mẫu số I.25', ten:'Giấy đề nghị bổ sung, cập nhật thông tin đăng ký hoạt động CN/VPĐD/địa điểm KD (chứng khoán)', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-26', mau:'Mẫu số I.26', ten:'Giấy đề nghị cấp lại GCNĐKDN/Giấy xác nhận thay đổi/GCNĐKHĐ CN-VPĐD/GCNĐKĐDKD', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-27', mau:'Mẫu số I.27', ten:'Thông báo về việc tạm ngừng kinh doanh/tiếp tục kinh doanh trước thời hạn của DN/CN/địa điểm KD', luc:'I', cat:'nguoi-nop', type:'dn', fillable:true },
+  { id:'pl1-28', mau:'Mẫu số I.28', ten:'Thông báo về việc chấm dứt hoạt động chi nhánh/văn phòng đại diện/địa điểm kinh doanh', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-29', mau:'Mẫu số I.29', ten:'Thông báo về việc chấm dứt hoạt động chi nhánh/văn phòng đại diện ở nước ngoài', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-30', mau:'Mẫu số I.30', ten:'Thông báo về việc giải thể doanh nghiệp', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-31', mau:'Mẫu số I.31', ten:'Thông báo về việc huỷ bỏ Nghị quyết/Quyết định giải thể doanh nghiệp', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-32', mau:'Mẫu số I.32', ten:'Giấy đề nghị công bố nội dung đăng ký doanh nghiệp', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-33', mau:'Mẫu số I.33', ten:'Giấy đề nghị dừng thực hiện thủ tục đăng ký doanh nghiệp', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-34', mau:'Mẫu số I.34', ten:'Cam kết thực hiện mục tiêu xã hội, môi trường (Doanh nghiệp xã hội)', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-35', mau:'Mẫu số I.35', ten:'Thông báo thay đổi nội dung Cam kết thực hiện mục tiêu xã hội, môi trường', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-36', mau:'Mẫu số I.36', ten:'Thông báo chấm dứt Cam kết thực hiện mục tiêu xã hội, môi trường', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  // Giấy chứng nhận (cơ quan cấp)
+  { id:'pl1-37', mau:'Mẫu số I.37', ten:'Giấy chứng nhận đăng ký doanh nghiệp – Doanh nghiệp tư nhân', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-38', mau:'Mẫu số I.38', ten:'Giấy chứng nhận đăng ký doanh nghiệp – Công ty TNHH một thành viên', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-39', mau:'Mẫu số I.39', ten:'Giấy chứng nhận đăng ký doanh nghiệp – Công ty TNHH hai thành viên trở lên', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-40', mau:'Mẫu số I.40', ten:'Giấy chứng nhận đăng ký doanh nghiệp – Công ty cổ phần', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-41', mau:'Mẫu số I.41', ten:'Giấy chứng nhận đăng ký doanh nghiệp – Công ty hợp danh', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-42', mau:'Mẫu số I.42', ten:'Giấy chứng nhận đăng ký hoạt động chi nhánh/văn phòng đại diện', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-43', mau:'Mẫu số I.43', ten:'Giấy chứng nhận đăng ký địa điểm kinh doanh', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-44', mau:'Mẫu số I.44', ten:'Giấy xác nhận về việc thay đổi nội dung đăng ký doanh nghiệp', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-45', mau:'Mẫu số I.45', ten:'Giấy xác nhận về việc thay đổi nội dung đăng ký hoạt động CN/VPĐD/địa điểm KD', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-46', mau:'Mẫu số I.46', ten:'Giấy chứng nhận.../Giấy xác nhận... (Cấp lại do mất, cháy, rách, nát)', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-47', mau:'Mẫu số I.47', ten:'Thông báo về cơ quan thuế quản lý trực tiếp', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-48', mau:'Mẫu số I.48', ten:'Thông báo về việc sửa đổi, bổ sung hồ sơ đăng ký doanh nghiệp', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-49', mau:'Mẫu số I.49', ten:'Thông báo về việc dừng/từ chối dừng thực hiện thủ tục đăng ký doanh nghiệp', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-50', mau:'Mẫu số I.50', ten:'Thông báo yêu cầu doanh nghiệp báo cáo về việc tuân thủ quy định của Luật DN', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-51', mau:'Mẫu số I.51', ten:'Thông báo về việc hiệu đính thông tin trong GCNĐKDN/Giấy xác nhận/...', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-52', mau:'Mẫu số I.52', ten:'Thông báo về việc rà soát thông tin đăng ký doanh nghiệp, tình trạng pháp lý', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-53', mau:'Mẫu số I.53', ten:'Thông báo yêu cầu DN tạm ngừng kinh doanh ngành, nghề ĐKKD có điều kiện', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-54', mau:'Mẫu số I.54', ten:'Giấy xác nhận về việc DN thông báo tạm ngừng kinh doanh', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-55', mau:'Mẫu số I.55', ten:'Giấy xác nhận về việc CN/địa điểm KD thông báo tạm ngừng KD/VPĐD tạm ngừng HĐ', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-56', mau:'Mẫu số I.56', ten:'Giấy xác nhận về việc DN thông báo tiếp tục KD trước thời hạn đã thông báo', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-57', mau:'Mẫu số I.57', ten:'Giấy xác nhận CN/địa điểm KD tiếp tục KD trước thời hạn/VPĐD tiếp tục HĐ trước thời hạn', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-58', mau:'Mẫu số I.58', ten:'Giấy xác nhận về việc cho thuê doanh nghiệp tư nhân', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-59', mau:'Mẫu số I.59', ten:'Thông báo yêu cầu thay đổi tên DN/CN/VPĐD/địa điểm KD (xâm phạm quyền SHCN)', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-60', mau:'Mẫu số I.60', ten:'Thông báo về việc vi phạm của DN thuộc trường hợp thu hồi GCNĐKDN', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-61', mau:'Mẫu số I.61', ten:'Quyết định về việc thu hồi Giấy chứng nhận đăng ký doanh nghiệp', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-62', mau:'Mẫu số I.62', ten:'Quyết định về việc huỷ bỏ quyết định thu hồi và khôi phục GCNĐKDN/GCNĐKHĐ CN-VPĐD/GCNĐKĐDKD', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-63', mau:'Mẫu số I.63', ten:'Quyết định về việc thu hồi GCNĐKHĐ CN, VPĐD; Giấy chứng nhận đăng ký địa điểm KD', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-64', mau:'Mẫu số I.64', ten:'Quyết định về việc thu hồi GCNĐKDN/GCNĐKHĐ CN-VPĐD/địa điểm KD (lần đăng ký thay đổi)', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-65', mau:'Mẫu số I.65', ten:'Quyết định về việc thu hồi Giấy xác nhận thông báo tạm ngừng/tiếp tục KD/HĐ...', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-66', mau:'Mẫu số I.66', ten:'Thông báo về việc CN/VPĐD/địa điểm KD đang làm thủ tục chấm dứt HĐ', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-67', mau:'Mẫu số I.67', ten:'Thông báo về việc chấm dứt hoạt động chi nhánh/văn phòng đại diện/địa điểm KD', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-68', mau:'Mẫu số I.68', ten:'Thông báo về việc doanh nghiệp đang làm thủ tục giải thể', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-69', mau:'Mẫu số I.69', ten:'Thông báo về việc doanh nghiệp đã giải thể/chấm dứt tồn tại', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-70', mau:'Mẫu số I.70', ten:'Giấy tiếp nhận hồ sơ và hẹn trả kết quả hồ sơ đăng ký DN/CN/VPĐD/địa điểm KD', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-71', mau:'Mẫu số I.71', ten:'Giấy tiếp nhận hồ sơ và hẹn trả kết quả hồ sơ đăng ký DN qua mạng điện tử', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-72', mau:'Mẫu số I.72', ten:'Công bố nội dung đăng ký thành lập doanh nghiệp', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-73', mau:'Mẫu số I.73', ten:'Công bố thay đổi nội dung đăng ký doanh nghiệp', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-74', mau:'Mẫu số I.74', ten:'Công bố nội dung đăng ký doanh nghiệp (các trường hợp khác ngoài Mẫu 72, 73)', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-75', mau:'Mẫu số I.75', ten:'Thông báo về việc khôi phục GCNĐKDN/GCNĐKHĐ CN-VPĐD/GCNĐKĐDKD', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-76', mau:'Mẫu số I.76', ten:'Thông báo về việc cấp đăng ký doanh nghiệp', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-77', mau:'Mẫu số I.77', ten:'Thông báo về việc GCNĐKDN/GCNĐKHĐ CN-VPĐD/địa điểm KD/Giấy xác nhận không có hiệu lực', luc:'I', cat:'co-quan', type:'dn cq', fillable:false },
+  { id:'pl1-78', mau:'Mẫu số I.78', ten:'Giấy đề nghị cung cấp thông tin đăng ký doanh nghiệp', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-79', mau:'Mẫu số I.79', ten:'Giấy đề nghị CQĐKKD yêu cầu DN thay đổi tên DN, tên CN, VPĐD, địa điểm KD', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  { id:'pl1-80', mau:'Mẫu số I.80', ten:'Giấy đề nghị thu hồi giấy tờ do kê khai trong hồ sơ đăng ký DN là giả mạo', luc:'I', cat:'nguoi-nop', type:'dn', fillable:false },
+  // PHU LUC II - HO KINH DOANH
+  { id:'pl2-1', mau:'Mẫu số II.1', ten:'Giấy đề nghị đăng ký hộ kinh doanh', luc:'II', cat:'nguoi-nop', type:'hkd', fillable:true },
+  { id:'pl2-2', mau:'Mẫu số II.2', ten:'Giấy đề nghị đăng ký thay đổi nội dung đăng ký hộ kinh doanh', luc:'II', cat:'nguoi-nop', type:'hkd', fillable:false },
+  { id:'pl2-3', mau:'Mẫu số II.3', ten:'Giấy đề nghị đăng ký tạm ngừng kinh doanh/tiếp tục kinh doanh trước thời hạn của HKD', luc:'II', cat:'nguoi-nop', type:'hkd', fillable:false },
+  { id:'pl2-4', mau:'Mẫu số II.4', ten:'Thông báo về việc chấm dứt hoạt động hộ kinh doanh', luc:'II', cat:'nguoi-nop', type:'hkd', fillable:false },
+  { id:'pl2-5', mau:'Mẫu số II.5', ten:'Giấy đề nghị cấp lại Giấy chứng nhận đăng ký hộ kinh doanh', luc:'II', cat:'nguoi-nop', type:'hkd', fillable:false },
+  { id:'pl2-6', mau:'Mẫu số II.6', ten:'Giấy đề nghị dừng thực hiện thủ tục đăng ký hộ kinh doanh', luc:'II', cat:'nguoi-nop', type:'hkd', fillable:false },
+  { id:'pl2-7', mau:'Mẫu số II.7', ten:'Giấy chứng nhận đăng ký hộ kinh doanh', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-8', mau:'Mẫu số II.8', ten:'Thông báo về cơ quan thuế quản lý trực tiếp hộ kinh doanh', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-9', mau:'Mẫu số II.9', ten:'Giấy chứng nhận đăng ký hộ kinh doanh (Cấp lại do mất, cháy, rách, nát)', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-10', mau:'Mẫu số II.10', ten:'Thông báo về việc sửa đổi, bổ sung hồ sơ đăng ký hộ kinh doanh', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-11', mau:'Mẫu số II.11', ten:'Thông báo yêu cầu hộ kinh doanh báo cáo về việc tuân thủ các quy định về HKD', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-12', mau:'Mẫu số II.12', ten:'Thông báo về việc vi phạm của HKD thuộc trường hợp thu hồi GCNĐKHKD', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-13', mau:'Mẫu số II.13', ten:'Thông báo về việc chấm dứt hoạt động hộ kinh doanh (cơ quan ban hành)', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-14', mau:'Mẫu số II.14', ten:'Quyết định về việc thu hồi Giấy chứng nhận đăng ký hộ kinh doanh', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-15', mau:'Mẫu số II.15', ten:'Quyết định về việc thu hồi GCNĐKHKD của lần đăng ký thay đổi', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-16', mau:'Mẫu số II.16', ten:'Quyết định về việc huỷ bỏ quyết định thu hồi và khôi phục GCNĐKHKD', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-17', mau:'Mẫu số II.17', ten:'Giấy tiếp nhận hồ sơ và hẹn trả kết quả hồ sơ đăng ký HKD', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-18', mau:'Mẫu số II.18', ten:'Giấy tiếp nhận hồ sơ và hẹn trả kết quả hồ sơ đăng ký HKD qua mạng điện tử', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-19', mau:'Mẫu số II.19', ten:'Thông báo yêu cầu HKD tạm ngừng kinh doanh ngành, nghề ĐKKD có điều kiện', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-20', mau:'Mẫu số II.20', ten:'Giấy xác nhận về việc HKD đăng ký tạm ngừng KD/tiếp tục KD trước thời hạn đã đăng ký', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-21', mau:'Mẫu số II.21', ten:'Thông báo về việc GCNĐKHKD không có hiệu lực', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-22', mau:'Mẫu số II.22', ten:'Thông báo yêu cầu HKD đăng ký thay đổi thành viên không được quyền thành lập HKD', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-23', mau:'Mẫu số II.23', ten:'Thông báo về việc xử lý hồ sơ đăng ký HKD hoặc ra thông báo, quyết định không đúng quy định', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-24', mau:'Mẫu số II.24', ten:'Thông báo về việc khôi phục Giấy chứng nhận đăng ký HKD', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-25', mau:'Mẫu số II.25', ten:'Giấy đề nghị cung cấp thông tin đăng ký hộ kinh doanh', luc:'II', cat:'nguoi-nop', type:'hkd', fillable:false },
+  { id:'pl2-26', mau:'Mẫu số II.26', ten:'Thông báo cấp đăng ký hộ kinh doanh', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-27', mau:'Mẫu số II.27', ten:'Thông báo về việc CQĐKKD yêu cầu HKD thay đổi tên HKD (xâm phạm quyền SHCN)', luc:'II', cat:'co-quan', type:'hkd cq', fillable:false },
+  { id:'pl2-28', mau:'Mẫu số II.28', ten:'Giấy đề nghị CQĐKKD yêu cầu HKD thay đổi tên HKD (xâm phạm quyền SHCN)', luc:'II', cat:'nguoi-nop', type:'hkd', fillable:false },
+];
+
+// ============================================================
+// KNOWLEDGE BASE (from actual legal docs)
+// ============================================================
+const KB = {
+  'Điều kiện thành lập doanh nghiệp tư nhân': `<h4>📌 Điều kiện thành lập Doanh nghiệp Tư nhân</h4>
+<p>Theo <span class="law-ref" onclick="showPage('docs')">Luật DN 2020 (sửa 2025)</span> và <span class="law-ref" onclick="showPage('docs')">NĐ 168/2025/NĐ-CP</span>:</p>
+<h4>1. Điều kiện về chủ thể</h4>
+<ul>
+  <li>Cá nhân Việt Nam hoặc nước ngoài (trừ các đối tượng bị cấm tại Điều 18 Luật DN)</li>
+  <li>Mỗi cá nhân chỉ được làm chủ <strong>một</strong> DNTN</li>
+  <li>Chủ DNTN không đồng thời là chủ hộ kinh doanh, thành viên công ty hợp danh</li>
+</ul>
+<h4>2. Hồ sơ đăng ký (Phụ lục I – TT 68/2025)</h4>
+<ul>
+  <li><strong>Mẫu số I.1:</strong> Giấy đề nghị đăng ký DNTN</li>
+  <li>Bản sao hợp lệ CCCD/CMND/Hộ chiếu của chủ DNTN</li>
+  <li>Cam kết thực hiện mục tiêu xã hội, môi trường (nếu là DN xã hội – Mẫu số I.34)</li>
+</ul>
+<h4>3. Nơi nộp hồ sơ</h4>
+<p>Cơ quan đăng ký kinh doanh cấp tỉnh nơi DN đặt trụ sở chính, hoặc nộp qua Cổng thông tin quốc gia về ĐKDN.</p>
+<h4>4. Thời gian xử lý</h4>
+<p>03 ngày làm việc kể từ khi nhận đủ hồ sơ hợp lệ.</p>
+<p style="margin-top:12px"><strong>Biểu mẫu cần dùng:</strong> <span class="law-ref" onclick="openFormById('pl1-1')">Mẫu số I.1 → Điền ngay</span></p>`,
+
+  'So sánh loại hình': `<h4>📊 So sánh các loại hình doanh nghiệp</h4>
+<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px">
+  <tr style="background:#f0ebe0"><th style="padding:8px;border:1px solid #d4c5a9;text-align:left">Tiêu chí</th><th style="padding:8px;border:1px solid #d4c5a9">DNTN</th><th style="padding:8px;border:1px solid #d4c5a9">TNHH 1TV</th><th style="padding:8px;border:1px solid #d4c5a9">TNHH ≥2TV</th><th style="padding:8px;border:1px solid #d4c5a9">Cổ phần</th></tr>
+  <tr><td style="padding:7px;border:1px solid #e0d8c8">Số thành viên</td><td style="padding:7px;border:1px solid #e0d8c8;text-align:center">1</td><td style="padding:7px;border:1px solid #e0d8c8;text-align:center">1</td><td style="padding:7px;border:1px solid #e0d8c8;text-align:center">2–50</td><td style="padding:7px;border:1px solid #e0d8c8;text-align:center">≥3</td></tr>
+  <tr style="background:#faf8f3"><td style="padding:7px;border:1px solid #e0d8c8">Trách nhiệm</td><td style="padding:7px;border:1px solid #e0d8c8">Vô hạn</td><td style="padding:7px;border:1px solid #e0d8c8">Hữu hạn</td><td style="padding:7px;border:1px solid #e0d8c8">Hữu hạn</td><td style="padding:7px;border:1px solid #e0d8c8">Hữu hạn</td></tr>
+  <tr><td style="padding:7px;border:1px solid #e0d8c8">Phát hành cổ phiếu</td><td style="padding:7px;border:1px solid #e0d8c8;text-align:center">✗</td><td style="padding:7px;border:1px solid #e0d8c8;text-align:center">✗</td><td style="padding:7px;border:1px solid #e0d8c8;text-align:center">✗</td><td style="padding:7px;border:1px solid #e0d8c8;text-align:center">✓</td></tr>
+  <tr style="background:#faf8f3"><td style="padding:7px;border:1px solid #e0d8c8">Niêm yết CK</td><td style="padding:7px;border:1px solid #e0d8c8;text-align:center">✗</td><td style="padding:7px;border:1px solid #e0d8c8;text-align:center">✗</td><td style="padding:7px;border:1px solid #e0d8c8;text-align:center">✗</td><td style="padding:7px;border:1px solid #e0d8c8;text-align:center">✓</td></tr>
+  <tr><td style="padding:7px;border:1px solid #e0d8c8">Mẫu đăng ký</td><td style="padding:7px;border:1px solid #e0d8c8">I.1</td><td style="padding:7px;border:1px solid #e0d8c8">I.2</td><td style="padding:7px;border:1px solid #e0d8c8">I.3 + I.6</td><td style="padding:7px;border:1px solid #e0d8c8">I.4 + I.7</td></tr>
+</table>
+<p style="margin-top:12px;font-size:12px;color:#7a6f5d">Nguồn: Luật Doanh nghiệp 2020 (sửa đổi 17/6/2025), NĐ 168/2025/NĐ-CP, TT 68/2025/TT-BTC</p>`,
+
+  'Thay đổi người đại diện': `<h4>📋 Thay đổi người đại diện theo pháp luật</h4>
+<p>Theo <span class="law-ref">NĐ 168/2025/NĐ-CP</span> và <span class="law-ref">TT 68/2025/TT-BTC – Phụ lục I</span>:</p>
+<h4>Biểu mẫu sử dụng</h4>
+<ul>
+  <li><strong>Mẫu số I.13:</strong> Giấy đề nghị đăng ký thay đổi người đại diện theo pháp luật</li>
+  <li>Kèm theo: Bản sao hợp lệ CCCD/Hộ chiếu của người đại diện mới</li>
+</ul>
+<h4>Nội dung phải kê khai trong Mẫu I.13</h4>
+<ul>
+  <li>Tên doanh nghiệp, mã số doanh nghiệp</li>
+  <li>Họ tên, số định danh cá nhân của người đại diện cũ</li>
+  <li>Họ tên, số định danh cá nhân, địa chỉ, chức danh của người đại diện mới</li>
+  <li>Lý do thay đổi</li>
+</ul>
+<h4>Nơi nộp & thời gian</h4>
+<p>Nộp tại Cơ quan ĐKKD cấp tỉnh hoặc qua Cổng ĐKDN. Thời gian xử lý: 03 ngày làm việc.</p>
+<p style="margin-top:12px"><strong>Biểu mẫu cần dùng:</strong> <span class="law-ref" onclick="openFormById('pl1-13')">Mẫu số I.13 → Điền ngay</span></p>`,
+
+  'Hộ kinh doanh': `<h4>🏪 Đăng ký hộ kinh doanh</h4>
+<p>Theo <span class="law-ref">NĐ 168/2025/NĐ-CP</span> và <span class="law-ref">TT 68/2025 – Phụ lục II</span>:</p>
+<h4>Điều kiện thành lập HKD</h4>
+<ul>
+  <li>Cá nhân là công dân Việt Nam đủ 18 tuổi, có năng lực hành vi dân sự đầy đủ</li>
+  <li>Hoặc các thành viên hộ gia đình đăng ký chung</li>
+  <li>Mỗi cá nhân chỉ được đăng ký một HKD; không đồng thời là chủ DNTN</li>
+</ul>
+<h4>Hồ sơ đăng ký (Phụ lục II)</h4>
+<ul>
+  <li><strong>Mẫu số II.1:</strong> Giấy đề nghị đăng ký hộ kinh doanh</li>
+  <li>Bản sao hợp lệ CCCD/CMND của chủ HKD và từng thành viên</li>
+  <li>Bản sao hợp lệ văn bản xác nhận vốn pháp định (nếu ngành nghề yêu cầu)</li>
+</ul>
+<h4>Nơi nộp</h4>
+<p>Cơ quan đăng ký kinh doanh cấp xã (UBND xã/phường nơi đặt địa điểm kinh doanh).</p>
+<h4>Thời gian xử lý</h4>
+<p>03 ngày làm việc kể từ khi nhận đủ hồ sơ hợp lệ.</p>
+<p style="margin-top:12px"><strong>Biểu mẫu cần dùng:</strong> <span class="law-ref" onclick="openFormById('pl2-1')">Mẫu số II.1 → Điền ngay</span></p>`,
+
+  'Tạm ngừng kinh doanh': `<h4>⏸️ Thủ tục tạm ngừng kinh doanh</h4>
+<p>Theo <span class="law-ref">NĐ 168/2025/NĐ-CP</span> và <span class="law-ref">TT 68/2025 – Mẫu I.27</span>:</p>
+<h4>Biểu mẫu sử dụng</h4>
+<ul>
+  <li><strong>Mẫu số I.27:</strong> Thông báo về việc tạm ngừng kinh doanh / tiếp tục kinh doanh trước thời hạn đã thông báo của doanh nghiệp/chi nhánh/địa điểm KD/VPĐD</li>
+</ul>
+<h4>Quy định quan trọng</h4>
+<ul>
+  <li>Doanh nghiệp phải thông báo <strong>trước ít nhất 03 ngày làm việc</strong> trước ngày tạm ngừng</li>
+  <li>Thời gian tạm ngừng không quá <strong>01 năm/lần</strong></li>
+  <li>Có thể gia hạn nhiều lần nhưng tổng cộng không quá 02 năm liên tiếp</li>
+  <li>Vẫn phải hoàn thành các nghĩa vụ thuế, bảo hiểm trong thời gian tạm ngừng</li>
+</ul>
+<h4>Kết quả trả về</h4>
+<p>Mẫu số I.54: Giấy xác nhận về việc DN thông báo tạm ngừng KD (do CQĐKKD cấp)</p>
+<p style="margin-top:12px"><strong>Biểu mẫu cần dùng:</strong> <span class="law-ref" onclick="openFormById('pl1-27')">Mẫu số I.27 → Điền ngay</span></p>`,
+
+  'Chủ sở hữu hưởng lợi': `<h4>👤 Chủ sở hữu hưởng lợi – Quy định mới NĐ 168/2025</h4>
+<p>Đây là quy định <strong>mới</strong> theo <span class="law-ref">NĐ 168/2025/NĐ-CP</span>, nhằm tăng cường minh bạch sở hữu.</p>
+<h4>Định nghĩa</h4>
+<p>Chủ sở hữu hưởng lợi là cá nhân thực sự nắm quyền kiểm soát cuối cùng đối với doanh nghiệp, hoặc hưởng lợi từ tài sản/hoạt động của doanh nghiệp, thông qua sở hữu trực tiếp hoặc gián tiếp.</p>
+<h4>Biểu mẫu kê khai</h4>
+<ul>
+  <li><strong>Mẫu số I.10:</strong> Danh sách chủ sở hữu hưởng lợi của doanh nghiệp</li>
+  <li><strong>Mẫu số I.11:</strong> Kê khai thông tin để xác định chủ sở hữu hưởng lợi của doanh nghiệp</li>
+</ul>
+<h4>Trường hợp phải kê khai</h4>
+<ul>
+  <li>Khi đăng ký thành lập doanh nghiệp mới</li>
+  <li>Khi thay đổi cơ cấu sở hữu dẫn đến thay đổi chủ sở hữu hưởng lợi</li>
+</ul>`,
+
+  'Giải thể doanh nghiệp': `<h4>🚪 Thủ tục giải thể doanh nghiệp</h4>
+<p>Theo <span class="law-ref">Luật DN 2020</span> và <span class="law-ref">NĐ 168/2025/NĐ-CP</span>:</p>
+<h4>Điều kiện giải thể</h4>
+<ul>
+  <li>DN đã thanh toán hết các khoản nợ và nghĩa vụ tài sản</li>
+  <li>Không trong quá trình giải quyết tranh chấp tại Tòa án hoặc trọng tài</li>
+</ul>
+<h4>Biểu mẫu sử dụng</h4>
+<ul>
+  <li><strong>Mẫu số I.30:</strong> Thông báo về việc giải thể doanh nghiệp (DN nộp)</li>
+  <li><strong>Mẫu số I.68:</strong> Thông báo về việc DN đang làm thủ tục giải thể (CQĐKKD gửi)</li>
+  <li><strong>Mẫu số I.69:</strong> Thông báo về việc DN đã giải thể/chấm dứt tồn tại (CQĐKKD gửi)</li>
+  <li><strong>Mẫu số I.31:</strong> Thông báo về việc huỷ bỏ Nghị quyết/Quyết định giải thể (nếu cần)</li>
+</ul>
+<h4>Quy trình</h4>
+<p>1. HĐQT/Chủ sở hữu ra Nghị quyết/Quyết định giải thể → 2. Thông báo đến CQĐKKD (Mẫu I.30) → 3. Thanh lý tài sản, thanh toán nợ → 4. Nộp hồ sơ giải thể hoàn chỉnh → 5. Nhận thông báo giải thể từ CQĐKKD.</p>`,
+
+  'Chi nhánh văn phòng đại diện': `<h4>🏬 Đăng ký hoạt động Chi nhánh / Văn phòng đại diện</h4>
+<p>Theo <span class="law-ref">NĐ 168/2025/NĐ-CP</span> và <span class="law-ref">TT 68/2025 – Phụ lục I</span>:</p>
+<h4>Biểu mẫu sử dụng</h4>
+<ul>
+  <li><strong>Mẫu số I.17:</strong> Giấy đề nghị đăng ký hoạt động chi nhánh/văn phòng đại diện / Thông báo lập địa điểm kinh doanh</li>
+  <li><strong>Mẫu số I.18:</strong> Thông báo về việc lập chi nhánh/VPĐD ở nước ngoài</li>
+</ul>
+<h4>Phân biệt Chi nhánh và VPĐD</h4>
+<ul>
+  <li><strong>Chi nhánh:</strong> Có thể thực hiện toàn bộ/một phần chức năng của DN kể cả ký hợp đồng; có con dấu riêng</li>
+  <li><strong>VPĐD:</strong> Chỉ thực hiện chức năng đại diện, không được ký hợp đồng kinh tế trực tiếp</li>
+  <li><strong>Địa điểm KD:</strong> Nơi hoạt động cụ thể của DN, không nhất thiết phải đăng ký (trừ trường hợp pháp luật yêu cầu)</li>
+</ul>
+<h4>Nơi đăng ký</h4>
+<p>Cơ quan ĐKKD cấp tỉnh nơi đặt trụ sở chi nhánh/VPĐD.</p>`
+};
+
+// ============================================================
+// FUNCTIONS
+// ============================================================
+let currentFilter = 'all';
+let currentFormId = null;
+
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('nav-' + page)?.classList.add('active');
+  const titles = { search: 'Hỏi đáp pháp luật doanh nghiệp', forms: 'Biểu mẫu TT 68/2025', docs: 'Văn bản pháp quy' };
+  const badges = { search: 'AI Hỗ trợ', forms: '88 mẫu', docs: '4 văn bản' };
+  document.getElementById('topbar-title').textContent = titles[page] || '';
+  document.getElementById('topbar-badge').textContent = badges[page] || '';
+  if (page === 'forms') renderForms();
+}
+
+function filterAndShow(cat) {
+  showPage('forms');
+  filterForms(cat, null);
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+}
+
+function filterForms(cat, btn) {
+  currentFilter = cat;
+  if (btn) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  renderForms();
+}
+
+function renderForms() {
+  const grid = document.getElementById('forms-grid');
+  let filtered = FORMS;
+  if (currentFilter === 'dn') filtered = FORMS.filter(f => f.type.includes('dn') && !f.type.includes('hkd'));
+  else if (currentFilter === 'hkd') filtered = FORMS.filter(f => f.type.includes('hkd'));
+  else if (currentFilter === 'nguoi-nop') filtered = FORMS.filter(f => f.cat === 'nguoi-nop');
+  else if (currentFilter === 'co-quan') filtered = FORMS.filter(f => f.cat === 'co-quan');
+
+  grid.innerHTML = filtered.map(f => `
+    <div class="form-card" onclick="openForm('${f.id}')">
+      <div class="mau-so">${f.mau} · Phụ lục ${f.luc}</div>
+      <h3>${f.ten}</h3>
+      <span class="tag ${f.type.includes('hkd') ? 'tag-hkd' : f.cat === 'co-quan' ? 'tag-cq' : 'tag-dn'}">
+        ${f.cat === 'co-quan' ? '🏛 Cơ quan ban hành' : f.type.includes('hkd') ? '🏪 Hộ KD' : '🏢 Doanh nghiệp'}
+      </span>
+      ${f.fillable ? '<span class="tag" style="background:#e8f4e8;color:#1a6b3a;margin-left:4px">✏️ Điền ngay</span>' : ''}
+    </div>
+  `).join('');
+}
+
+function openFormById(id) {
+  openForm(id);
+}
+
+function openForm(id) {
+  const form = FORMS.find(f => f.id === id);
+  if (!form) return;
+  currentFormId = id;
+  document.getElementById('modal-title').textContent = form.mau + ' – ' + form.ten;
+  document.getElementById('modal-subtitle').textContent = 'TT 68/2025/TT-BTC · Phụ lục ' + form.luc + ' · ' + (form.cat === 'co-quan' ? 'Do cơ quan đăng ký kinh doanh ban hành' : 'Người đề nghị lập và nộp');
+  document.getElementById('modal-body').innerHTML = getFormHTML(id, form);
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function getFormHTML(id, form) {
+  if (!form.fillable) {
+    return `<div class="note-box"><strong>ℹ️ Lưu ý</strong>Biểu mẫu này ${form.cat === 'co-quan' ? 'do <strong>Cơ quan đăng ký kinh doanh</strong> ban hành, không phải người đề nghị lập.' : 'chưa có form điền online. Vui lòng tải mẫu từ Cổng thông tin quốc gia về đăng ký doanh nghiệp (dangkykinhdoanh.gov.vn).'}</div>
+    <div style="background:#f9f5ef;border-radius:8px;padding:16px">
+      <h4 style="margin-bottom:12px;font-size:14px">📋 Thông tin mẫu: ${form.mau}</h4>
+      <p style="font-size:13px;line-height:1.7;color:#333">${form.ten}</p>
+      <p style="margin-top:8px;font-size:12px;color:#7a6f5d">Căn cứ: Thông tư 68/2025/TT-BTC ngày 01/7/2025 của Bộ trưởng Bộ Tài chính · Phụ lục ${form.luc}</p>
+    </div>`;
+  }
+
+  // Build form by ID
+  const forms_html = {
+    'pl1-1': getMau1HTML(),
+    'pl1-2': getMau2HTML(),
+    'pl1-3': getMau3HTML(),
+    'pl1-13': getMau13HTML(),
+    'pl1-27': getMau27HTML(),
+    'pl2-1': getMauHKD1HTML(),
+    'pl1-4': getMau4HTML(),
+    'pl1-5': getMau5HTML(),
+    'pl1-6': getMau6HTML(),
+    'pl1-7': getMau7HTML(),
+  };
+  return forms_html[id] || getMau1HTML();
+}
+
+function getMauHeader(mauSo, tieuDe, loaiDN) {
+  return `
+  <div style="text-align:center;margin-bottom:20px;padding:16px;background:#faf8f3;border-radius:8px;border:1px solid #d4c5a9">
+    <p style="font-size:11px;font-weight:700;letter-spacing:1px">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+    <p style="font-size:11px">Độc lập - Tự do - Hạnh phúc</p>
+    <hr style="border:none;border-top:1px solid #d4c5a9;margin:8px 0">
+    <div class="field-row" style="margin-top:8px">
+      <div></div>
+      <div class="field-group"><label>Địa danh, ngày tháng năm <span class="req">*</span></label>
+        <input type="text" placeholder="Hà Nội, ngày ... tháng ... năm 2025" name="ngay_thang" required></div>
+    </div>
+    <h3 style="margin-top:12px;font-size:15px;font-weight:700">${tieuDe}</h3>
+    ${loaiDN ? `<p style="font-size:13px;font-weight:700">${loaiDN}</p>` : ''}
+  </div>
+  <div class="field-group">
+    <label>Kính gửi: Cơ quan đăng ký kinh doanh cấp tỉnh <span class="req">*</span></label>
+    <input type="text" name="co_quan" placeholder="Ví dụ: Sở Kế hoạch và Đầu tư Thành phố Hà Nội" required>
+  </div>`;
+}
+
+function getMau1HTML() {
+  return getMauHeader('I.1','GIẤY ĐỀ NGHỊ ĐĂNG KÝ DOANH NGHIỆP','DOANH NGHIỆP TƯ NHÂN') + `
+  <div class="section-divider">I. Thông tin chủ doanh nghiệp</div>
+  <div class="note-box"><strong>📌 Lưu ý (ghi chú 1):</strong> Ghi họ tên bằng chữ IN HOA đúng theo CCCD/CMND/Hộ chiếu. Mục số định danh cá nhân: điền số CCCD 12 số (ưu tiên) hoặc số CMND 9 số.</div>
+  <div class="field-group"><label>Họ và tên chủ DNTN (CHỮ IN HOA) <span class="req">*</span></label>
+    <input type="text" name="ho_ten" placeholder="NGUYỄN VĂN A" style="text-transform:uppercase" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Ngày, tháng, năm sinh <span class="req">*</span></label>
+      <input type="text" name="ngay_sinh" placeholder="dd/mm/yyyy" required></div>
+    <div class="field-group"><label>Giới tính <span class="req">*</span></label>
+      <select name="gioi_tinh" required><option value="">-- Chọn --</option><option>Nam</option><option>Nữ</option></select></div>
+  </div>
+  <div class="field-group"><label>Số định danh cá nhân (CCCD 12 số) <span class="req">*</span></label>
+    <input type="text" name="so_cccd" placeholder="012345678901" maxlength="12" required></div>
+  <div class="section-divider" style="font-size:11px;color:#7a6f5d;font-weight:400;text-transform:none;border:none;margin-top:0">Địa chỉ liên lạc</div>
+  <div class="field-group"><label>Số nhà, đường/phố <span class="req">*</span></label>
+    <input type="text" name="so_nha" placeholder="Số 1, phố Tràng Tiền" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Xã/Phường/Đặc khu <span class="req">*</span></label>
+      <input type="text" name="xa_phuong" placeholder="Phường Tràng Tiền" required></div>
+    <div class="field-group"><label>Tỉnh/Thành phố <span class="req">*</span></label>
+      <input type="text" name="tinh_tp" placeholder="Hà Nội" required></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Điện thoại (nếu có)</label>
+      <input type="tel" name="dien_thoai" placeholder="0912345678"></div>
+    <div class="field-group"><label>Thư điện tử (nếu có)</label>
+      <input type="email" name="email" placeholder="ten@email.com"></div>
+  </div>
+
+  <div class="section-divider">1. Tình trạng thành lập</div>
+  <div class="checkbox-group">
+    <label class="checkbox-row"><input type="radio" name="tinh_trang" value="moi" checked> Thành lập mới</label>
+    <label class="checkbox-row"><input type="radio" name="tinh_trang" value="chuyen_hkd"> Thành lập trên cơ sở chuyển đổi từ hộ kinh doanh</label>
+    <label class="checkbox-row"><input type="radio" name="tinh_trang" value="chuyen_csbtxh"> Thành lập trên cơ sở chuyển đổi từ cơ sở bảo trợ xã hội/quỹ xã hội/quỹ từ thiện</label>
+  </div>
+  <div style="margin-top:8px">
+    <label class="checkbox-row"><input type="checkbox" name="dn_xa_hoi"> <strong>Doanh nghiệp xã hội</strong> (kèm theo Cam kết thực hiện mục tiêu xã hội, môi trường – Mẫu I.34)</label>
+  </div>
+
+  <div class="section-divider">2. Tên doanh nghiệp</div>
+  <div class="field-group"><label>Tên doanh nghiệp bằng tiếng Việt (CHỮ IN HOA) <span class="req">*</span></label>
+    <input type="text" name="ten_dn_viet" placeholder="DOANH NGHIỆP TƯ NHÂN ABC" style="text-transform:uppercase" required></div>
+  <div class="field-group"><label>Tên doanh nghiệp bằng tiếng nước ngoài (nếu có)</label>
+    <input type="text" name="ten_dn_nn" placeholder="ABC Private Enterprise"></div>
+  <div class="field-group"><label>Tên doanh nghiệp viết tắt (nếu có)</label>
+    <input type="text" name="ten_dn_vt" placeholder="DNTN ABC"></div>
+
+  <div class="section-divider">3. Địa chỉ trụ sở chính</div>
+  <div class="field-group"><label>Số nhà, đường/phố <span class="req">*</span></label>
+    <input type="text" name="ts_so_nha" placeholder="Số 10, đường Láng Hạ" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Xã/Phường/Đặc khu <span class="req">*</span></label>
+      <input type="text" name="ts_xa" placeholder="Phường Thành Công" required></div>
+    <div class="field-group"><label>Tỉnh/Thành phố <span class="req">*</span></label>
+      <input type="text" name="ts_tinh" placeholder="Hà Nội" required></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Điện thoại <span class="req">*</span></label>
+      <input type="tel" name="ts_dien_thoai" placeholder="024.3828.xxxx" required></div>
+    <div class="field-group"><label>Thư điện tử (nếu có)</label>
+      <input type="email" name="ts_email" placeholder="info@company.vn"></div>
+  </div>
+
+  <div class="section-divider">4. Ngành, nghề kinh doanh</div>
+  <div class="note-box"><strong>📌 Lưu ý:</strong> Ghi tên và mã ngành theo mã cấp 4 trong Hệ thống ngành kinh tế Việt Nam (VSIC) ban hành theo QĐ 36/2025/QĐ-TTg.</div>
+  <table class="mini-table">
+    <thead><tr><th style="width:40px">STT</th><th>Tên ngành</th><th style="width:100px">Mã ngành (4 số)</th><th style="width:80px">Ngành chính</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:center">1</td><td><input name="nganh1" placeholder="Bán buôn..."></td><td><input name="ma1" placeholder="4641" maxlength="4"></td><td style="text-align:center"><input type="checkbox" name="chinh1"></td></tr>
+      <tr><td style="text-align:center">2</td><td><input name="nganh2" placeholder=""></td><td><input name="ma2" placeholder="" maxlength="4"></td><td style="text-align:center"><input type="checkbox" name="chinh2"></td></tr>
+      <tr><td style="text-align:center">3</td><td><input name="nganh3" placeholder=""></td><td><input name="ma3" placeholder="" maxlength="4"></td><td style="text-align:center"><input type="checkbox" name="chinh3"></td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-divider">5. Vốn đầu tư</div>
+  <div class="field-row">
+    <div class="field-group"><label>Vốn đầu tư (bằng số, VNĐ) <span class="req">*</span></label>
+      <input type="text" name="von_so" placeholder="1.000.000.000" required></div>
+    <div class="field-group"><label>Vốn đầu tư (bằng chữ, VNĐ) <span class="req">*</span></label>
+      <input type="text" name="von_chu" placeholder="Một tỷ đồng" required></div>
+  </div>
+
+  <div class="section-divider">6. Thông tin đăng ký thuế</div>
+  <div class="field-row">
+    <div class="field-group"><label>Họ tên Giám đốc/Tổng giám đốc (nếu có)</label>
+      <input type="text" name="giam_doc" placeholder="Họ và tên"></div>
+    <div class="field-group"><label>Số định danh cá nhân Giám đốc</label>
+      <input type="text" name="gd_cccd" placeholder="012345678901" maxlength="12"></div>
+  </div>
+  <div class="field-group"><label>Năm tài chính (từ ngày ... đến ngày ...)</label>
+    <input type="text" name="nam_tc" placeholder="Từ 01/01 đến 31/12"></div>
+  <div class="field-group"><label>Tổng số lao động (dự kiến)</label>
+    <input type="number" name="lao_dong" placeholder="10" min="0"></div>
+  <div class="field-group"><label>Phương pháp tính thuế GTGT <span class="req">*</span><span class="hint">Ghi chú 5: Chọn phương pháp phù hợp theo hướng dẫn của cơ quan thuế</span></label>
+    <select name="pp_thue" required>
+      <option value="">-- Chọn phương pháp --</option>
+      <option value="khau_tru">Khấu trừ</option>
+      <option value="tt_gtgt">Trực tiếp trên GTGT</option>
+      <option value="tt_doanh_so">Trực tiếp trên doanh số</option>
+      <option value="khong">Không phải nộp thuế GTGT</option>
+    </select>
+  </div>
+
+  <div class="section-divider">7. Bảo hiểm xã hội</div>
+  <div class="note-box"><strong>📌 Lưu ý:</strong> DN đăng ký ngành chính là nông nghiệp, lâm nghiệp, ngư nghiệp, diêm nghiệp và trả lương theo sản phẩm/khoán mới được chọn 3 hoặc 6 tháng/lần. Còn lại chọn hàng tháng.</div>
+  <div class="checkbox-group" style="flex-direction:row;gap:16px">
+    <label class="checkbox-row"><input type="radio" name="bhxh" value="thang" checked> Hàng tháng</label>
+    <label class="checkbox-row"><input type="radio" name="bhxh" value="3thang"> 3 tháng một lần</label>
+    <label class="checkbox-row"><input type="radio" name="bhxh" value="6thang"> 6 tháng một lần</label>
+  </div>
+  <div id="preview-section" style="margin-top:24px">
+    <h4>📄 Xem trước nội dung biểu mẫu</h4>
+    <div id="preview-content"></div>
+  </div>`;
+}
+
+function getMau2HTML() {
+  return getMauHeader('I.2','GIẤY ĐỀ NGHỊ ĐĂNG KÝ DOANH NGHIỆP','CÔNG TY TRÁCH NHIỆM HỮU HẠN MỘT THÀNH VIÊN') + `
+  <div class="section-divider">I. Thông tin chủ sở hữu công ty</div>
+  <div class="note-box"><strong>📌 Ghi chú:</strong> Chủ sở hữu có thể là cá nhân hoặc tổ chức. Chọn loại chủ sở hữu phù hợp.</div>
+  <div class="field-group"><label>Loại chủ sở hữu <span class="req">*</span></label>
+    <select name="loai_chu" required onchange="toggleChuSoHuu(this.value)">
+      <option value="">-- Chọn --</option>
+      <option value="ca_nhan">Cá nhân</option>
+      <option value="to_chuc">Tổ chức</option>
+    </select>
+  </div>
+  <div id="ca_nhan_fields">
+    <div class="field-group"><label>Họ và tên chủ sở hữu (CHỮ IN HOA) <span class="req">*</span></label>
+      <input type="text" name="ho_ten_chu" placeholder="NGUYỄN VĂN A" style="text-transform:uppercase"></div>
+    <div class="field-row">
+      <div class="field-group"><label>Ngày sinh <span class="req">*</span></label><input type="text" name="ngay_sinh_chu" placeholder="dd/mm/yyyy"></div>
+      <div class="field-group"><label>Giới tính <span class="req">*</span></label>
+        <select name="gt_chu"><option value="">--</option><option>Nam</option><option>Nữ</option></select></div>
+    </div>
+    <div class="field-group"><label>Số định danh cá nhân (CCCD) <span class="req">*</span></label>
+      <input type="text" name="cccd_chu" placeholder="012345678901" maxlength="12"></div>
+  </div>
+  <div class="section-divider">2. Tên công ty</div>
+  <div class="field-group"><label>Tên công ty bằng tiếng Việt (CHỮ IN HOA) <span class="req">*</span></label>
+    <input type="text" name="ten_cty" placeholder="CÔNG TY TNHH ABC" style="text-transform:uppercase" required></div>
+  <div class="field-group"><label>Tên viết tắt (nếu có)</label><input type="text" name="ten_vt" placeholder="ABC Co., Ltd"></div>
+  <div class="section-divider">3. Địa chỉ trụ sở chính</div>
+  <div class="field-group"><label>Số nhà, đường/phố <span class="req">*</span></label><input type="text" name="dc_so_nha" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Xã/Phường <span class="req">*</span></label><input type="text" name="dc_xa" required></div>
+    <div class="field-group"><label>Tỉnh/Thành phố <span class="req">*</span></label><input type="text" name="dc_tinh" required></div>
+  </div>
+  <div class="section-divider">4. Ngành nghề kinh doanh</div>
+  <table class="mini-table">
+    <thead><tr><th>STT</th><th>Tên ngành</th><th>Mã ngành</th><th>Ngành chính</th></tr></thead>
+    <tbody>
+      ${[1,2,3].map(i=>`<tr><td style="text-align:center">${i}</td><td><input name="nganh${i}"></td><td><input name="ma${i}" maxlength="4"></td><td style="text-align:center"><input type="checkbox" name="chinh${i}"></td></tr>`).join('')}
+    </tbody>
+  </table>
+  <div class="section-divider">5. Vốn điều lệ</div>
+  <div class="field-row">
+    <div class="field-group"><label>Vốn điều lệ (số, VNĐ) <span class="req">*</span></label><input type="text" name="von_so" placeholder="500.000.000" required></div>
+    <div class="field-group"><label>Vốn điều lệ (chữ) <span class="req">*</span></label><input type="text" name="von_chu" placeholder="Năm trăm triệu đồng" required></div>
+  </div>`;
+}
+
+function getMau3HTML() {
+  return getMauHeader('I.3','GIẤY ĐỀ NGHỊ ĐĂNG KÝ DOANH NGHIỆP','CÔNG TY TNHH HAI THÀNH VIÊN TRỞ LÊN') + `
+  <div class="note-box"><strong>📌 Lưu ý:</strong> Mẫu số I.3 dùng kèm với <strong>Mẫu số I.6</strong> (Danh sách thành viên công ty TNHH 2 thành viên trở lên).</div>
+  <div class="section-divider">Người đại diện theo pháp luật</div>
+  <div class="field-group"><label>Họ và tên người đại diện PL (CHỮ IN HOA) <span class="req">*</span></label>
+    <input type="text" name="dd_ho_ten" placeholder="NGUYỄN VĂN A" style="text-transform:uppercase" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Chức danh <span class="req">*</span></label>
+      <select name="dd_chuc_danh" required><option value="">--</option><option>Giám đốc</option><option>Tổng Giám đốc</option><option>Chủ tịch HĐTV</option></select></div>
+    <div class="field-group"><label>Số CCCD <span class="req">*</span></label><input type="text" name="dd_cccd" placeholder="012345678901" maxlength="12" required></div>
+  </div>
+  <div class="section-divider">Tên công ty</div>
+  <div class="field-group"><label>Tên công ty (tiếng Việt, CHỮ IN HOA) <span class="req">*</span></label>
+    <input type="text" name="ten_cty" placeholder="CÔNG TY TNHH XYZ" style="text-transform:uppercase" required></div>
+  <div class="section-divider">Địa chỉ trụ sở chính</div>
+  <div class="field-group"><label>Số nhà, đường/phố <span class="req">*</span></label><input type="text" name="dc" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Xã/Phường <span class="req">*</span></label><input type="text" name="xa" required></div>
+    <div class="field-group"><label>Tỉnh/Thành phố <span class="req">*</span></label><input type="text" name="tinh" required></div>
+  </div>
+  <div class="section-divider">Ngành nghề & Vốn điều lệ</div>
+  <table class="mini-table">
+    <thead><tr><th>STT</th><th>Tên ngành</th><th>Mã ngành</th><th>Ngành chính</th></tr></thead>
+    <tbody>${[1,2].map(i=>`<tr><td style="text-align:center">${i}</td><td><input name="ng${i}"></td><td><input name="ma${i}" maxlength="4"></td><td style="text-align:center"><input type="checkbox"></td></tr>`).join('')}</tbody>
+  </table>
+  <div class="field-row" style="margin-top:12px">
+    <div class="field-group"><label>Vốn điều lệ (số, VNĐ) <span class="req">*</span></label><input type="text" name="von_so" required></div>
+    <div class="field-group"><label>Vốn điều lệ (chữ) <span class="req">*</span></label><input type="text" name="von_chu" required></div>
+  </div>
+  <div class="note-box" style="margin-top:16px"><strong>⚠️ Nhắc nhở:</strong> Nhớ lập kèm Mẫu số I.6 để kê khai danh sách từng thành viên và phần vốn góp tương ứng.</div>`;
+}
+
+function getMau4HTML() {
+  return getMauHeader('I.4','GIẤY ĐỀ NGHỊ ĐĂNG KÝ DOANH NGHIỆP','CÔNG TY CỔ PHẦN') + `
+  <div class="note-box"><strong>📌 Lưu ý:</strong> Công ty cổ phần phải có tối thiểu 3 cổ đông sáng lập. Mẫu I.4 dùng kèm <strong>Mẫu I.7</strong> (Danh sách cổ đông sáng lập).</div>
+  <div class="section-divider">Người đại diện theo pháp luật</div>
+  <div class="field-group"><label>Họ và tên (CHỮ IN HOA) <span class="req">*</span></label><input type="text" style="text-transform:uppercase" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Chức danh <span class="req">*</span></label>
+      <select required><option value="">--</option><option>Giám đốc</option><option>Tổng Giám đốc</option><option>Chủ tịch HĐQT</option></select></div>
+    <div class="field-group"><label>Số CCCD <span class="req">*</span></label><input type="text" placeholder="012345678901" maxlength="12" required></div>
+  </div>
+  <div class="section-divider">Tên công ty & Địa chỉ</div>
+  <div class="field-group"><label>Tên công ty cổ phần (tiếng Việt, CHỮ IN HOA) <span class="req">*</span></label>
+    <input type="text" placeholder="CÔNG TY CỔ PHẦN XYZ" style="text-transform:uppercase" required></div>
+  <div class="field-group"><label>Địa chỉ trụ sở chính <span class="req">*</span></label><input type="text" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Xã/Phường <span class="req">*</span></label><input type="text" required></div>
+    <div class="field-group"><label>Tỉnh/Thành phố <span class="req">*</span></label><input type="text" required></div>
+  </div>
+  <div class="section-divider">Vốn điều lệ & Cổ phần</div>
+  <div class="field-row">
+    <div class="field-group"><label>Vốn điều lệ (VNĐ) <span class="req">*</span></label><input type="text" required></div>
+    <div class="field-group"><label>Tổng số cổ phần <span class="req">*</span></label><input type="number" required></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Mệnh giá mỗi cổ phần (VNĐ)</label><input type="text" placeholder="10.000"></div>
+    <div class="field-group"><label>Loại cổ phần phổ thông<br><span class="hint">Cổ phần ưu đãi (nếu có)</span></label><input type="text" placeholder="100% cổ phần phổ thông"></div>
+  </div>`;
+}
+
+function getMau5HTML() {
+  return getMauHeader('I.5','GIẤY ĐỀ NGHỊ ĐĂNG KÝ DOANH NGHIỆP','CÔNG TY HỢP DANH') + `
+  <div class="note-box"><strong>📌 Lưu ý:</strong> Công ty hợp danh có ít nhất 2 thành viên hợp danh. Mẫu I.5 dùng kèm <strong>Mẫu I.9</strong> (Danh sách thành viên).</div>
+  <div class="section-divider">Người đại diện theo pháp luật</div>
+  <div class="field-group"><label>Họ và tên (CHỮ IN HOA) <span class="req">*</span></label><input type="text" style="text-transform:uppercase" required></div>
+  <div class="field-group"><label>Số CCCD <span class="req">*</span></label><input type="text" placeholder="012345678901" maxlength="12" required></div>
+  <div class="section-divider">Tên & Địa chỉ</div>
+  <div class="field-group"><label>Tên công ty hợp danh (CHỮ IN HOA) <span class="req">*</span></label>
+    <input type="text" placeholder="CÔNG TY HỢP DANH XYZ" style="text-transform:uppercase" required></div>
+  <div class="field-group"><label>Địa chỉ trụ sở chính <span class="req">*</span></label><input type="text" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Xã/Phường <span class="req">*</span></label><input type="text" required></div>
+    <div class="field-group"><label>Tỉnh/Thành phố <span class="req">*</span></label><input type="text" required></div>
+  </div>`;
+}
+
+function getMau6HTML() {
+  return `<div class="note-box"><strong>📌 Ghi chú:</strong> Mẫu I.6 là danh sách thành viên, dùng kèm với Mẫu I.3. Liệt kê tất cả thành viên và phần vốn góp tương ứng.</div>
+  <div class="section-divider">Thông tin công ty</div>
+  <div class="field-group"><label>Tên công ty (CHỮ IN HOA) <span class="req">*</span></label><input type="text" style="text-transform:uppercase" required></div>
+  <div class="section-divider">Danh sách thành viên</div>
+  <table class="mini-table">
+    <thead><tr><th>STT</th><th>Họ và tên thành viên</th><th>Số CCCD</th><th>Vốn góp (VNĐ)</th><th>Tỷ lệ (%)</th></tr></thead>
+    <tbody>
+      ${[1,2,3].map(i=>`<tr><td style="text-align:center">${i}</td><td><input name="tv${i}_ten" style="text-transform:uppercase"></td><td><input name="tv${i}_cccd" maxlength="12" style="width:120px"></td><td><input name="tv${i}_von" placeholder="0"></td><td><input name="tv${i}_phan_tram" placeholder="0%"></td></tr>`).join('')}
+    </tbody>
+  </table>
+  <div class="field-row" style="margin-top:12px">
+    <div class="field-group"><label>Tổng vốn điều lệ (VNĐ) <span class="req">*</span></label><input type="text" required></div>
+    <div class="field-group"><label>Thời hạn góp vốn</label><input type="text" placeholder="90 ngày kể từ ngày được cấp GCNĐKDN"></div>
+  </div>`;
+}
+
+function getMau7HTML() {
+  return `<div class="note-box"><strong>📌 Ghi chú:</strong> Mẫu I.7 dùng kèm Mẫu I.4 (Đăng ký Công ty cổ phần). Cần ít nhất 3 cổ đông sáng lập.</div>
+  <div class="field-group"><label>Tên công ty cổ phần (CHỮ IN HOA) <span class="req">*</span></label><input type="text" style="text-transform:uppercase" required></div>
+  <div class="section-divider">Danh sách cổ đông sáng lập</div>
+  <table class="mini-table">
+    <thead><tr><th>STT</th><th>Họ và tên CĐ</th><th>Số CCCD</th><th>Số CP đăng ký mua</th><th>Giá trị (VNĐ)</th><th>Tỷ lệ (%)</th></tr></thead>
+    <tbody>
+      ${[1,2,3].map(i=>`<tr><td style="text-align:center">${i}</td><td><input style="text-transform:uppercase"></td><td><input maxlength="12" style="width:110px"></td><td><input placeholder="0"></td><td><input placeholder="0"></td><td><input placeholder="0%"></td></tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+
+function getMau13HTML() {
+  return getMauHeader('I.13','GIẤY ĐỀ NGHỊ ĐĂNG KÝ THAY ĐỔI NGƯỜI ĐẠI DIỆN THEO PHÁP LUẬT','') + `
+  <div class="section-divider">Thông tin doanh nghiệp</div>
+  <div class="field-group"><label>Tên doanh nghiệp (CHỮ IN HOA) <span class="req">*</span></label>
+    <input type="text" name="ten_dn" placeholder="CÔNG TY TNHH XYZ" style="text-transform:uppercase" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Mã số doanh nghiệp <span class="req">*</span></label>
+      <input type="text" name="ma_so_dn" placeholder="0123456789" required></div>
+    <div class="field-group"><label>Loại hình doanh nghiệp <span class="req">*</span></label>
+      <select name="loai_hinh" required>
+        <option value="">-- Chọn --</option>
+        <option>DNTN</option><option>Công ty TNHH một thành viên</option>
+        <option>Công ty TNHH hai thành viên trở lên</option>
+        <option>Công ty cổ phần</option><option>Công ty hợp danh</option>
+      </select></div>
+  </div>
+  <div class="section-divider">Thông tin người đại diện cũ</div>
+  <div class="field-group"><label>Họ và tên người đại diện cũ (CHỮ IN HOA)</label>
+    <input type="text" name="dd_cu_ho_ten" style="text-transform:uppercase"></div>
+  <div class="field-row">
+    <div class="field-group"><label>Chức danh</label>
+      <select name="dd_cu_chuc_danh">
+        <option value="">--</option><option>Giám đốc</option><option>Tổng Giám đốc</option><option>Chủ tịch HĐQT</option><option>Chủ tịch HĐTV</option>
+      </select></div>
+    <div class="field-group"><label>Số CCCD</label>
+      <input type="text" name="dd_cu_cccd" placeholder="012345678901" maxlength="12"></div>
+  </div>
+  <div class="section-divider">Thông tin người đại diện mới</div>
+  <div class="field-group"><label>Họ và tên người đại diện mới (CHỮ IN HOA) <span class="req">*</span></label>
+    <input type="text" name="dd_moi_ho_ten" style="text-transform:uppercase" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Ngày sinh <span class="req">*</span></label><input type="text" name="dd_moi_ns" placeholder="dd/mm/yyyy" required></div>
+    <div class="field-group"><label>Giới tính <span class="req">*</span></label>
+      <select name="dd_moi_gt" required><option value="">--</option><option>Nam</option><option>Nữ</option></select></div>
+  </div>
+  <div class="field-group"><label>Số CCCD người đại diện mới <span class="req">*</span></label>
+    <input type="text" name="dd_moi_cccd" placeholder="012345678901" maxlength="12" required></div>
+  <div class="field-group"><label>Địa chỉ liên lạc <span class="req">*</span></label>
+    <input type="text" name="dd_moi_dc" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Chức danh mới <span class="req">*</span></label>
+      <select name="dd_moi_chuc_danh" required>
+        <option value="">--</option><option>Giám đốc</option><option>Tổng Giám đốc</option><option>Chủ tịch HĐQT</option><option>Chủ tịch HĐTV</option>
+      </select></div>
+    <div class="field-group"><label>Điện thoại</label><input type="tel" name="dd_moi_tel"></div>
+  </div>
+  <div id="preview-section" style="margin-top:24px">
+    <h4>📄 Xem trước nội dung biểu mẫu</h4>
+    <div id="preview-content"></div>
+  </div>`;
+}
+
+function getMau27HTML() {
+  return getMauHeader('I.27','THÔNG BÁO VỀ VIỆC TẠM NGỪNG KINH DOANH / TIẾP TỤC KINH DOANH','') + `
+  <div class="section-divider">Loại thông báo</div>
+  <div class="checkbox-group" style="flex-direction:row;gap:16px;flex-wrap:wrap">
+    <label class="checkbox-row"><input type="radio" name="loai_tb" value="tam_ngung" checked> Tạm ngừng kinh doanh</label>
+    <label class="checkbox-row"><input type="radio" name="loai_tb" value="tiep_tuc"> Tiếp tục kinh doanh trước thời hạn đã thông báo</label>
+  </div>
+  <div class="section-divider">Thông tin doanh nghiệp</div>
+  <div class="field-group"><label>Tên doanh nghiệp (CHỮ IN HOA) <span class="req">*</span></label>
+    <input type="text" placeholder="CÔNG TY TNHH XYZ" style="text-transform:uppercase" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Mã số doanh nghiệp <span class="req">*</span></label><input type="text" placeholder="0123456789" required></div>
+    <div class="field-group"><label>Loại hình <span class="req">*</span></label>
+      <select required><option value="">--</option><option>DNTN</option><option>Công ty TNHH 1TV</option><option>Công ty TNHH ≥2TV</option><option>Công ty cổ phần</option><option>Công ty hợp danh</option></select></div>
+  </div>
+  <div class="section-divider">Thời gian tạm ngừng</div>
+  <div class="note-box"><strong>📌 Lưu ý:</strong> Thời gian tạm ngừng không quá <strong>01 năm/lần</strong>. Phải thông báo trước ít nhất <strong>03 ngày làm việc</strong>.</div>
+  <div class="field-row">
+    <div class="field-group"><label>Ngày bắt đầu tạm ngừng <span class="req">*</span></label><input type="date" required></div>
+    <div class="field-group"><label>Ngày kết thúc tạm ngừng <span class="req">*</span></label><input type="date" required></div>
+  </div>
+  <div class="field-group"><label>Lý do tạm ngừng kinh doanh <span class="req">*</span></label>
+    <textarea name="ly_do" placeholder="Ví dụ: Cần thời gian tái cơ cấu hoạt động kinh doanh..." required></textarea></div>
+  <div class="section-divider">Người đại diện theo pháp luật ký thông báo</div>
+  <div class="field-group"><label>Họ và tên người đại diện PL (CHỮ IN HOA) <span class="req">*</span></label>
+    <input type="text" style="text-transform:uppercase" required></div>
+  <div class="field-group"><label>Chức danh <span class="req">*</span></label>
+    <select required><option value="">--</option><option>Giám đốc</option><option>Tổng Giám đốc</option><option>Chủ tịch HĐQT</option></select></div>`;
+}
+
+function getMauHKD1HTML() {
+  return getMauHeader('II.1','GIẤY ĐỀ NGHỊ ĐĂNG KÝ HỘ KINH DOANH','') + `
+  <div class="note-box"><strong>📌 Lưu ý:</strong> Nộp tại <strong>UBND cấp xã/phường</strong> nơi đặt địa điểm kinh doanh (không phải Sở KH&ĐT). Hồ sơ bao gồm Mẫu II.1 + CCCD bản sao của chủ HKD.</div>
+  <div class="section-divider">I. Thông tin chủ hộ kinh doanh</div>
+  <div class="field-group"><label>Họ và tên chủ HKD (CHỮ IN HOA) <span class="req">*</span></label>
+    <input type="text" name="chu_ten" placeholder="NGUYỄN VĂN A" style="text-transform:uppercase" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Ngày sinh <span class="req">*</span></label><input type="text" name="chu_ns" placeholder="dd/mm/yyyy" required></div>
+    <div class="field-group"><label>Giới tính <span class="req">*</span></label>
+      <select name="chu_gt" required><option value="">--</option><option>Nam</option><option>Nữ</option></select></div>
+  </div>
+  <div class="field-group"><label>Số CCCD/CMND <span class="req">*</span></label>
+    <input type="text" name="chu_cccd" placeholder="012345678901" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Ngày cấp</label><input type="text" name="chu_ngay_cap" placeholder="dd/mm/yyyy"></div>
+    <div class="field-group"><label>Nơi cấp</label><input type="text" name="chu_noi_cap" placeholder="Cục Cảnh sát QLHC về TTXH"></div>
+  </div>
+  <div class="field-group"><label>Địa chỉ thường trú <span class="req">*</span></label><input type="text" name="chu_dc" required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Điện thoại</label><input type="tel" name="chu_tel"></div>
+    <div class="field-group"><label>Thư điện tử (nếu có)</label><input type="email" name="chu_email"></div>
+  </div>
+
+  <div class="section-divider">II. Thông tin hộ kinh doanh</div>
+  <div class="field-group"><label>Tên hộ kinh doanh (bằng chữ in hoa) <span class="req">*</span></label>
+    <input type="text" name="hkd_ten" placeholder="HỘ KINH DOANH NGUYỄN VĂN A" style="text-transform:uppercase" required></div>
+  <div class="field-group"><label>Địa điểm kinh doanh <span class="req">*</span></label>
+    <input type="text" name="hkd_dc" placeholder="Số nhà, đường, phố..." required></div>
+  <div class="field-row">
+    <div class="field-group"><label>Xã/Phường <span class="req">*</span></label><input type="text" name="hkd_xa" required></div>
+    <div class="field-group"><label>Tỉnh/Thành phố <span class="req">*</span></label><input type="text" name="hkd_tinh" required></div>
+  </div>
+
+  <div class="section-divider">III. Ngành, nghề kinh doanh</div>
+  <table class="mini-table">
+    <thead><tr><th>STT</th><th>Tên ngành</th><th>Mã ngành (4 số)</th><th>Ngành chính</th></tr></thead>
+    <tbody>
+      ${[1,2].map(i=>`<tr><td style="text-align:center">${i}</td><td><input name="ng${i}"></td><td><input name="ma${i}" maxlength="4"></td><td style="text-align:center"><input type="checkbox"></td></tr>`).join('')}
+    </tbody>
+  </table>
+
+  <div class="section-divider">IV. Vốn kinh doanh</div>
+  <div class="field-row">
+    <div class="field-group"><label>Vốn kinh doanh (số, VNĐ) <span class="req">*</span></label><input type="text" name="von_so" required></div>
+    <div class="field-group"><label>Vốn kinh doanh (chữ) <span class="req">*</span></label><input type="text" name="von_chu" required></div>
+  </div>
+
+  <div class="section-divider">V. Số lao động dự kiến</div>
+  <div class="field-group"><label>Số lao động dự kiến sử dụng</label>
+    <input type="number" name="lao_dong" placeholder="3" min="0"></div>`;
+}
+
+function toggleDoc(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+function doSearch() {
+  const q = document.getElementById('search-input').value.trim();
+  if (!q) return;
+  askQuestion(q);
+}
+
+function askQuestion(question) {
+  document.getElementById('search-input').value = question;
+  const box = document.getElementById('answer-box');
+  const content = document.getElementById('answer-content');
+  box.style.display = 'block';
+  content.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span><span style="font-size:12px;color:#7a6f5d;margin-left:8px">Đang tra cứu văn bản pháp luật...</span></div>';
+  
+  // Find best matching KB entry
+  setTimeout(() => {
+    const q = question.toLowerCase();
+    let answer = null;
+    if (q.includes('tư nhân') || q.includes('dntn') || q.includes('thành lập')) answer = KB['Điều kiện thành lập doanh nghiệp tư nhân'];
+    else if (q.includes('so sánh') || q.includes('tnhh') || q.includes('cổ phần') || q.includes('loại hình') || q.includes('khác gì')) answer = KB['So sánh loại hình'];
+    else if (q.includes('đại diện') || q.includes('người đại diện')) answer = KB['Thay đổi người đại diện'];
+    else if (q.includes('hộ kinh doanh') || q.includes('hkd')) answer = KB['Hộ kinh doanh'];
+    else if (q.includes('tạm ngừng')) answer = KB['Tạm ngừng kinh doanh'];
+    else if (q.includes('hưởng lợi') || q.includes('chủ sở hữu hưởng')) answer = KB['Chủ sở hữu hưởng lợi'];
+    else if (q.includes('giải thể')) answer = KB['Giải thể doanh nghiệp'];
+    else if (q.includes('chi nhánh') || q.includes('văn phòng đại diện') || q.includes('vpđd')) answer = KB['Chi nhánh văn phòng đại diện'];
+    else {
+      // Generic response for questions not in KB
+      answer = `<h4>🔍 Kết quả tra cứu</h4>
+<p>Dựa trên hệ thống văn bản pháp luật: <span class="law-ref">TT 68/2025/TT-BTC</span> · <span class="law-ref">NĐ 168/2025/NĐ-CP</span> · <span class="law-ref">Luật DN 2020 (sửa 2025)</span></p>
+<p style="margin-top:12px">Câu hỏi của bạn: <strong>"${question}"</strong></p>
+<p style="margin-top:8px">Hệ thống chưa có câu trả lời cụ thể cho nội dung này trong cơ sở dữ liệu hiện tại. Bạn có thể:</p>
+<ul>
+  <li>Tra cứu trực tiếp tại <strong>dangkykinhdoanh.gov.vn</strong></li>
+  <li>Liên hệ Phòng Đăng ký kinh doanh – Sở Kế hoạch và Đầu tư tỉnh/thành phố</li>
+  <li>Xem mục <strong>Văn bản pháp quy</strong> để đọc trực tiếp NĐ 168/2025 và TT 68/2025</li>
+  <li>Xem mục <strong>Biểu mẫu</strong> để tra cứu mẫu phù hợp</li>
+</ul>
+<p style="margin-top:12px;font-size:11px;color:#7a6f5d">⚠️ Hệ thống này chỉ cung cấp thông tin dựa trên các văn bản pháp luật được tải lên. Không tự suy đoán nội dung pháp lý.</p>`;
+    }
+    content.innerHTML = answer;
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 800);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.getElementById('preview-section').style.display = 'none';
+}
+
+function previewForm() {
+  const modal = document.getElementById('modal');
+  const inputs = modal.querySelectorAll('input, select, textarea');
+  const preview = document.getElementById('preview-section');
+  const previewContent = document.getElementById('preview-content');
+  
+  let lines = ['='.repeat(60), 'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', 'Độc lập - Tự do - Hạnh phúc', '-'.repeat(30), ''];
+  const title = document.getElementById('modal-title').textContent;
+  lines.push(title.toUpperCase(), '');
+  
+  inputs.forEach(inp => {
+    if (inp.type === 'radio' || inp.type === 'checkbox') return;
+    const label = inp.closest('.field-group')?.querySelector('label');
+    const labelText = label?.firstChild?.textContent?.trim() || inp.name || '';
+    if (labelText && inp.value) {
+      lines.push(`${labelText}: ${inp.value}`);
+    }
+  });
+  
+  lines.push('', '-'.repeat(60));
+  lines.push('Người đề nghị ký và ghi họ tên');
+  lines.push('(Chữ ký, con dấu nếu có)');
+  
+  previewContent.textContent = lines.join('\n');
+  preview.style.display = 'block';
+  preview.scrollIntoView({ behavior: 'smooth' });
+}
+
+function generateDoc() {
+  alert('Tính năng xuất file Word (.docx) cần kết nối với server backend để xử lý. Trong phiên bản này, bạn có thể:\n\n1. Nhấn "Xem trước" để xem nội dung điền\n2. Copy nội dung xem trước và dán vào Word\n3. Hoặc dùng tính năng In (Ctrl+P) để lưu PDF\n\nPhiên bản đầy đủ sẽ tạo file .docx đúng chuẩn TT 68/2025.');
+}
+
+// INIT
+renderForms();
+</script>
+</body>
+</html>
