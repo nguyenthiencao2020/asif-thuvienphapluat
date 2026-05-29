@@ -439,6 +439,10 @@
   </div>
 </div>
 
+<!-- Thư viện tạo file Word (.docx) chạy hoàn toàn phía trình duyệt -->
+<script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.7/dist/pizzip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.50.0/build/docxtemplater.js"></script>
+
 <script>
 // ============================================================
 // DATA: ALL FORMS from TT 68/2025 (extracted from actual docs)
@@ -761,6 +765,7 @@ function openForm(id) {
   document.getElementById('modal-subtitle').textContent = 'TT 68/2025/TT-BTC · Phụ lục ' + form.luc + ' · ' + (form.cat === 'co-quan' ? 'Do cơ quan đăng ký kinh doanh ban hành' : 'Người đề nghị lập và nộp');
   document.getElementById('modal-body').innerHTML = getFormHTML(id, form);
   document.getElementById('modal-overlay').classList.add('open');
+  if (form.fillable) prefillFromProfile();
 }
 
 function getFormHTML(id, form) {
@@ -1016,15 +1021,15 @@ function getMau4HTML() {
   </div>
   <div class="section-divider">Tên công ty & Địa chỉ</div>
   <div class="field-group"><label>Tên công ty cổ phần (tiếng Việt, CHỮ IN HOA) <span class="req">*</span></label>
-    <input type="text" placeholder="CÔNG TY CỔ PHẦN XYZ" style="text-transform:uppercase" required></div>
-  <div class="field-group"><label>Địa chỉ trụ sở chính <span class="req">*</span></label><input type="text" required></div>
+    <input type="text" name="ten_cty" placeholder="CÔNG TY CỔ PHẦN XYZ" style="text-transform:uppercase" required></div>
+  <div class="field-group"><label>Địa chỉ trụ sở chính <span class="req">*</span></label><input type="text" name="so_nha" required></div>
   <div class="field-row">
-    <div class="field-group"><label>Xã/Phường <span class="req">*</span></label><input type="text" required></div>
-    <div class="field-group"><label>Tỉnh/Thành phố <span class="req">*</span></label><input type="text" required></div>
+    <div class="field-group"><label>Xã/Phường <span class="req">*</span></label><input type="text" name="xa" required></div>
+    <div class="field-group"><label>Tỉnh/Thành phố <span class="req">*</span></label><input type="text" name="tinh" required></div>
   </div>
   <div class="section-divider">Vốn điều lệ & Cổ phần</div>
   <div class="field-row">
-    <div class="field-group"><label>Vốn điều lệ (VNĐ) <span class="req">*</span></label><input type="text" required></div>
+    <div class="field-group"><label>Vốn điều lệ (VNĐ) <span class="req">*</span></label><input type="text" name="von_so" required></div>
     <div class="field-group"><label>Tổng số cổ phần <span class="req">*</span></label><input type="number" required></div>
   </div>
   <div class="field-row">
@@ -1041,11 +1046,11 @@ function getMau5HTML() {
   <div class="field-group"><label>Số CCCD <span class="req">*</span></label><input type="text" placeholder="012345678901" maxlength="12" required></div>
   <div class="section-divider">Tên & Địa chỉ</div>
   <div class="field-group"><label>Tên công ty hợp danh (CHỮ IN HOA) <span class="req">*</span></label>
-    <input type="text" placeholder="CÔNG TY HỢP DANH XYZ" style="text-transform:uppercase" required></div>
-  <div class="field-group"><label>Địa chỉ trụ sở chính <span class="req">*</span></label><input type="text" required></div>
+    <input type="text" name="ten_cty" placeholder="CÔNG TY HỢP DANH XYZ" style="text-transform:uppercase" required></div>
+  <div class="field-group"><label>Địa chỉ trụ sở chính <span class="req">*</span></label><input type="text" name="so_nha" required></div>
   <div class="field-row">
-    <div class="field-group"><label>Xã/Phường <span class="req">*</span></label><input type="text" required></div>
-    <div class="field-group"><label>Tỉnh/Thành phố <span class="req">*</span></label><input type="text" required></div>
+    <div class="field-group"><label>Xã/Phường <span class="req">*</span></label><input type="text" name="xa" required></div>
+    <div class="field-group"><label>Tỉnh/Thành phố <span class="req">*</span></label><input type="text" name="tinh" required></div>
   </div>`;
 }
 
@@ -1139,9 +1144,9 @@ function getMau27HTML() {
   </div>
   <div class="section-divider">Thông tin doanh nghiệp</div>
   <div class="field-group"><label>Tên doanh nghiệp (CHỮ IN HOA) <span class="req">*</span></label>
-    <input type="text" placeholder="CÔNG TY TNHH XYZ" style="text-transform:uppercase" required></div>
+    <input type="text" name="ten_dn" placeholder="CÔNG TY TNHH XYZ" style="text-transform:uppercase" required></div>
   <div class="field-row">
-    <div class="field-group"><label>Mã số doanh nghiệp <span class="req">*</span></label><input type="text" placeholder="0123456789" required></div>
+    <div class="field-group"><label>Mã số doanh nghiệp <span class="req">*</span></label><input type="text" name="ma_so_dn" placeholder="0123456789" required></div>
     <div class="field-group"><label>Loại hình <span class="req">*</span></label>
       <select required><option value="">--</option><option>DNTN</option><option>Công ty TNHH 1TV</option><option>Công ty TNHH ≥2TV</option><option>Công ty cổ phần</option><option>Công ty hợp danh</option></select></div>
   </div>
@@ -1294,8 +1299,97 @@ function previewForm() {
   preview.scrollIntoView({ behavior: 'smooth' });
 }
 
-function generateDoc() {
-  alert('Tính năng xuất file Word (.docx) cần kết nối với server backend để xử lý. Trong phiên bản này, bạn có thể:\n\n1. Nhấn "Xem trước" để xem nội dung điền\n2. Copy nội dung xem trước và dán vào Word\n3. Hoặc dùng tính năng In (Ctrl+P) để lưu PDF\n\nPhiên bản đầy đủ sẽ tạo file .docx đúng chuẩn TT 68/2025.');
+// ============================================================
+// XUẤT FILE WORD (.docx) – điền dữ liệu vào biểu mẫu gốc TT 68/2025
+// Template nằm trong thư mục templates/<id>.docx, có sẵn placeholder
+// dạng {ten_field} trùng với thuộc tính name của input.
+// ============================================================
+const TEMPLATE_FORMS = new Set([
+  'pl1-1','pl1-2','pl1-3','pl1-4','pl1-5','pl1-6','pl1-7','pl1-13','pl1-27','pl2-1'
+]);
+// Các trường dùng chung -> tự điền chéo giữa các mẫu (lưu localStorage)
+const SHARED_FIELDS = ['co_quan','ngay_thang','ho_ten','ho_ten_chu','chu_ten',
+  'ngay_sinh','ngay_sinh_chu','chu_ns','gioi_tinh','gt_chu','chu_gt',
+  'so_cccd','cccd_chu','chu_cccd','dien_thoai','chu_tel','email','chu_email'];
+
+function collectFormData() {
+  const modal = document.getElementById('modal');
+  const data = {};
+  modal.querySelectorAll('input, select, textarea').forEach(inp => {
+    if (!inp.name) return;
+    if (inp.type === 'radio') { if (inp.checked) data[inp.name] = inp.value; return; }
+    if (inp.type === 'checkbox') { data[inp.name] = inp.checked ? 'X' : ''; return; }
+    const v = (inp.value || '').trim();
+    if (v) data[inp.name] = v;   // bỏ trống -> giữ dòng "……" trong mẫu
+  });
+  return data;
+}
+
+function saveProfile(data) {
+  try {
+    const prof = JSON.parse(localStorage.getItem('tvpl_profile') || '{}');
+    SHARED_FIELDS.forEach(k => { if (data[k]) prof[k] = data[k]; });
+    localStorage.setItem('tvpl_profile', JSON.stringify(prof));
+  } catch (e) {}
+}
+
+function prefillFromProfile() {
+  let prof;
+  try { prof = JSON.parse(localStorage.getItem('tvpl_profile') || '{}'); }
+  catch (e) { return; }
+  const modal = document.getElementById('modal');
+  modal.querySelectorAll('input, select, textarea').forEach(inp => {
+    if (inp.name && prof[inp.name] && !inp.value &&
+        inp.type !== 'radio' && inp.type !== 'checkbox') {
+      inp.value = prof[inp.name];
+    }
+  });
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function generateDoc() {
+  const id = currentFormId;
+  if (!id || !TEMPLATE_FORMS.has(id)) {
+    alert('Biểu mẫu này chưa có template Word. Bạn có thể dùng "Xem trước" rồi In/Lưu PDF (Ctrl+P).');
+    return;
+  }
+  if (typeof PizZip === 'undefined' || typeof window.docxtemplater === 'undefined') {
+    alert('Đang tải thư viện tạo Word, vui lòng thử lại sau vài giây (cần kết nối mạng lần đầu).');
+    return;
+  }
+  const data = collectFormData();
+  saveProfile(data);
+  try {
+    const res = await fetch('templates/' + id + '.docx');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const buf = await res.arrayBuffer();
+    const zip = new PizZip(buf);
+    const Docxtemplater = window.docxtemplater;
+    const doc = new Docxtemplater(zip, {
+      paragraphLoop: true,
+      linebreaks: true,
+      nullGetter: () => '……………………'   // trường chưa điền -> giữ dòng chấm
+    });
+    doc.render(data);
+    const out = doc.getZip().generate({
+      type: 'blob',
+      mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    });
+    downloadBlob(out, id + '_da-dien.docx');
+  } catch (e) {
+    console.error(e);
+    alert('Không tạo được file Word: ' + e.message +
+      '\n\nLưu ý: tính năng cần chạy qua web (http/https hoặc Vercel), ' +
+      'không chạy khi mở trực tiếp file index.html bằng file://.');
+  }
 }
 
 // INIT
