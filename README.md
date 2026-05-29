@@ -28,8 +28,8 @@ và **tự điền chéo** sang các mẫu khác.
 | pl1-3 | Giấy đề nghị ĐKDN – Công ty TNHH hai thành viên trở lên |
 | pl1-4 | Giấy đề nghị ĐKDN – Công ty cổ phần |
 | pl1-5 | Giấy đề nghị ĐKDN – Công ty hợp danh |
-| pl1-6 | Danh sách thành viên công ty TNHH 2TV (bảng – tải mẫu trống) |
-| pl1-7 | Danh sách cổ đông sáng lập (bảng – tải mẫu trống) |
+| pl1-6 | Danh sách thành viên công ty TNHH 2TV (tự điền bảng) |
+| pl1-7 | Danh sách cổ đông sáng lập (tự điền bảng) |
 | pl1-13 | Thay đổi người đại diện theo pháp luật |
 | pl1-27 | Thông báo tạm ngừng / tiếp tục kinh doanh |
 | pl2-1 | Giấy đề nghị đăng ký hộ kinh doanh |
@@ -43,9 +43,9 @@ pip install python-docx
 python3 scripts/build_templates.py
 ```
 
-Script tách từng "Mẫu số N" ra file riêng (giữ nguyên định dạng) và chèn
-placeholder docxtemplater vào các dòng cần điền. Muốn bổ sung trường, sửa bảng
-`MAPS` trong `scripts/build_templates.py`.
+Script tách từng "Mẫu số N" ra file riêng (giữ nguyên định dạng), chèn
+placeholder docxtemplater vào các dòng cần điền (`MAPS`) và tạo vòng lặp cho
+bảng động – ngành nghề, danh sách thành viên/cổ đông (`TABLE_LOOPS`).
 
 ## Deploy lên Vercel
 

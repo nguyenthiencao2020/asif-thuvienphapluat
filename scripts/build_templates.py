@@ -160,6 +160,57 @@ MAPS = {
 }
 
 
+# ---------------------------------------------------------------------------
+# Vòng lặp bảng (docxtemplater): {#arr} ở ô đầu, {/arr} ở ô cuối của hàng dữ liệu
+#   cols: {chỉ_số_cột: 'placeholder'} ; row: chỉ số hàng dữ liệu cần biến thành lặp
+# ---------------------------------------------------------------------------
+NGANH_LOOP = {'kind': 'nganh', 'arr': 'nganh', 'row': 1,
+              'cols': {0: '{stt}', 1: '{ten}', 2: '{ma}', 3: '{chinh}'}}
+
+TABLE_LOOPS = {
+    'pl1-1': [NGANH_LOOP], 'pl1-2': [NGANH_LOOP], 'pl1-3': [NGANH_LOOP],
+    'pl1-4': [NGANH_LOOP], 'pl1-5': [NGANH_LOOP], 'pl2-1': [NGANH_LOOP],
+    'pl1-6': [{'kind': 'tbl0', 'arr': 'thanhvien', 'row': 3,
+               'cols': {0: '{stt}', 1: '{ten}', 4: '{cccd}', 8: '{von}', 9: '{tyle}'}}],
+    'pl1-7': [{'kind': 'tbl0', 'arr': 'codong', 'row': 5,
+               'cols': {0: '{stt}', 1: '{ten}', 4: '{cccd}', 8: '{cp}', 10: '{tyle}'}}],
+}
+
+
+def set_cell_text(cell, text):
+    p = cell.paragraphs[0]
+    for r in list(p.runs):
+        r._element.getparent().remove(r._element)
+    for extra in cell.paragraphs[1:]:
+        extra._element.getparent().remove(extra._element)
+    p.add_run(text)
+
+
+def find_nganh_table(doc):
+    for tbl in doc.tables:
+        cells = tbl.rows[0].cells
+        if len(cells) == 4 and 'Tên ngành' in cells[1].text:
+            return tbl
+    return None
+
+
+def add_table_loops(doc, fid):
+    n = 0
+    for cfg in TABLE_LOOPS.get(fid, []):
+        tbl = find_nganh_table(doc) if cfg['kind'] == 'nganh' else doc.tables[0]
+        if tbl is None or cfg['row'] >= len(tbl.rows):
+            continue
+        cells = tbl.rows[cfg['row']].cells
+        for ci, ph in cfg['cols'].items():
+            set_cell_text(cells[ci], ph)
+        # bọc vòng lặp: mở ở ô đầu, đóng ở ô cuối (ô cuối thật, tránh trùng merge)
+        first, last = cells[0], cells[-1]
+        set_cell_text(first, '{#%s}%s' % (cfg['arr'], first.text))
+        set_cell_text(last, '%s{/%s}' % (last.text, cfg['arr']))
+        n += 1
+    return n
+
+
 def set_paragraph_text(p, new_text):
     """Ghi đè text của paragraph thành 1 run, giữ định dạng run đầu."""
     runs = p.runs
@@ -215,8 +266,9 @@ def extract_form(form_id, src_path, scope, num, plI, pl2, plII_idx, total_blocks
         if i < start or i >= end:
             el.getparent().remove(el)
     hits = inject_placeholders(d, MAPS.get(form_id, []))
+    nloops = add_table_loops(d, form_id)
     d.save(tmp)
-    return tmp, len(MAPS.get(form_id, [])), len(hits)
+    return tmp, len(MAPS.get(form_id, [])), len(hits), nloops
 
 
 def main():
@@ -225,10 +277,10 @@ def main():
     total = len(els)
     print(f"Nguồn: {total} blocks | Phụ lục I: {len(plI)} mẫu | Phụ lục II: {len(pl2)} mẫu\n")
     for fid, (scope, num) in FORM_SOURCE.items():
-        path, nrules, nhits = extract_form(fid, SRC, scope, num, plI, pl2, plII, total)
+        path, nrules, nhits, nloops = extract_form(fid, SRC, scope, num, plI, pl2, plII, total)
         size = os.path.getsize(path)
         print(f"  {fid:8s} <- Phụ lục {scope} Mẫu {num:<2d}  "
-              f"-> {path} ({size:,}B)  placeholder: {nhits}/{nrules}")
+              f"-> {path} ({size:,}B)  field: {nhits}/{nrules}  bảng-lặp: {nloops}")
     print("\nXong.")
 
 
