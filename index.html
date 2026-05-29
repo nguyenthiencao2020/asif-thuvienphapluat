@@ -765,7 +765,7 @@ function openForm(id) {
   document.getElementById('modal-subtitle').textContent = 'TT 68/2025/TT-BTC · Phụ lục ' + form.luc + ' · ' + (form.cat === 'co-quan' ? 'Do cơ quan đăng ký kinh doanh ban hành' : 'Người đề nghị lập và nộp');
   document.getElementById('modal-body').innerHTML = getFormHTML(id, form);
   document.getElementById('modal-overlay').classList.add('open');
-  if (form.fillable) prefillFromProfile();
+  if (form.fillable) { prefillFromProfile(); bindMoneyFields(); }
 }
 
 function getFormHTML(id, form) {
@@ -791,7 +791,7 @@ function getFormHTML(id, form) {
     'pl1-6': getMau6HTML(),
     'pl1-7': getMau7HTML(),
   };
-  return forms_html[id] || getMau1HTML();
+  return quickFillBox() + (forms_html[id] || getMau1HTML());
 }
 
 function getMauHeader(mauSo, tieuDe, loaiDN) {
@@ -1377,6 +1377,154 @@ function downloadBlob(blob, filename) {
   document.body.appendChild(a); a.click();
   document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// ============================================================
+// ĐIỀN NHANH (rule-based, KHÔNG dùng AI) – tách thông tin từ văn bản dán vào
+// + đổi số tiền sang chữ + định dạng số. Toàn bộ chạy offline trên trình duyệt.
+// ============================================================
+function quickFillBox() {
+  return `<div style="background:#eef6ff;border:1px solid #cfe2ff;border-radius:8px;padding:12px;margin-bottom:18px">
+    <div style="font-size:12px;font-weight:600;color:#1a4e8a;margin-bottom:6px">⚡ Điền nhanh — dán thông tin, hệ thống tự tách (không cần AI, dữ liệu không gửi đi đâu)</div>
+    <textarea id="qf-input" rows="3" style="width:100%;font-size:13px;font-family:inherit;padding:8px;border:1px solid #cfe2ff;border-radius:6px" placeholder="Ví dụ: Họ tên NGUYỄN VĂN A; CCCD 012345678901; sinh 01/01/1990; ĐT 0912345678; email a@congty.vn; tên DN ABC; địa chỉ Số 1 Tràng Tiền; vốn 1 tỷ"></textarea>
+    <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="btn btn-gold" onclick="quickFillRun()">⚡ Tự điền vào form</button>
+      <button type="button" class="btn btn-outline" onclick="document.getElementById('qf-input').value='';document.getElementById('qf-result').textContent=''">Xóa</button>
+    </div>
+    <div id="qf-result" style="font-size:11px;color:#1a6b3a;margin-top:8px;line-height:1.6"></div>
+  </div>`;
+}
+
+// Đọc số tiền (VNĐ) thành chữ tiếng Việt
+function docSoTienVN(raw) {
+  const digits = String(raw == null ? '' : raw).replace(/[^\d]/g, '');
+  if (!digits) return '';
+  let n = parseInt(digits, 10);
+  if (isNaN(n)) return '';
+  if (n === 0) return 'Không đồng';
+  const cs = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
+  function doc3(b, full) {
+    const tram = Math.floor(b / 100), chuc = Math.floor((b % 100) / 10), dv = b % 10;
+    let s = '';
+    if (full || tram > 0) s += cs[tram] + ' trăm';
+    if (chuc === 0) { if (dv > 0 && s !== '') s += ' lẻ'; }
+    else if (chuc === 1) s += ' mười';
+    else s += ' ' + cs[chuc] + ' mươi';
+    if (dv > 0) {
+      if (chuc >= 2 && dv === 1) s += ' mốt';
+      else if (chuc >= 1 && dv === 5) s += ' lăm';
+      else s += ' ' + cs[dv];
+    }
+    return s.trim();
+  }
+  const groups = [];
+  let s = String(n);
+  while (s.length > 0) { groups.unshift(s.slice(-3)); s = s.slice(0, -3); }
+  const baseUnit = ['', ' nghìn', ' triệu', ' tỷ'];
+  const unitFor = p => p <= 3 ? baseUnit[p] : baseUnit[p - 3] + ' tỷ';
+  const len = groups.length;
+  let res = '';
+  for (let i = 0; i < len; i++) {
+    const b = parseInt(groups[i], 10);
+    if (b === 0) continue;
+    res += (res ? ' ' : '') + doc3(b, i !== 0) + unitFor(len - 1 - i);
+  }
+  res = res.trim();
+  return res.charAt(0).toUpperCase() + res.slice(1) + ' đồng';
+}
+
+function dinhDangSo(raw) {
+  const d = String(raw == null ? '' : raw).replace(/[^\d]/g, '');
+  return d ? d.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
+}
+
+// Phân tích số tiền từ chữ ("1 tỷ", "1,5 tỷ", "500 triệu") hoặc số có dấu chấm
+function parseMoney(s) {
+  if (!s) return '';
+  s = s.toLowerCase();
+  const units = [['tỷ', 1e9], ['tỉ', 1e9], ['ty', 1e9], ['triệu', 1e6], ['trieu', 1e6],
+    ['nghìn', 1e3], ['nghin', 1e3], ['ngàn', 1e3], ['ngan', 1e3]];
+  let total = 0, found = false;
+  for (const [u, mul] of units) {
+    const re = new RegExp('([\\d.,]+)\\s*' + u, 'g');
+    let m;
+    while ((m = re.exec(s))) {
+      const v = parseFloat(m[1].replace(/\./g, '').replace(',', '.'));
+      if (!isNaN(v)) { total += v * mul; found = true; }
+    }
+  }
+  if (found) return String(Math.round(total));
+  const m = s.match(/(\d[\d.,]{3,})/);
+  if (m) { const v = m[1].replace(/[.,]/g, ''); if (/^\d+$/.test(v)) return v; }
+  return '';
+}
+
+function quickFillRun() {
+  const ta = document.getElementById('qf-input');
+  if (!ta || !ta.value.trim()) return;
+  const text = ta.value;
+  const byLabel = labels => {
+    for (const l of labels) {
+      const m = text.match(new RegExp(l + '\\s*[:\\-–]?\\s*(.+)', 'i'));
+      if (m) return m[1].split(/[\n;]/)[0].trim();
+    }
+    return '';
+  };
+  const loose = re => { const m = text.match(re); return m ? m[1].trim() : ''; };
+
+  const vals = {
+    cccd: byLabel(['cccd', 'căn cước', 'cmnd', 'định danh']) || loose(/\b(\d{12})\b/) || loose(/\b(\d{9})\b/),
+    email: byLabel(['email', 'thư điện tử']) || loose(/([\w.+-]+@[\w-]+\.[\w.-]+)/),
+    phone: byLabel(['điện thoại', 'sđt', 'đt', 'phone', 'tel']) || loose(/\b(0\d{8,10})\b/),
+    ngaysinh: byLabel(['ngày sinh', 'sinh ngày', 'năm sinh', 'sinh']) || loose(/\b(\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{4})\b/),
+    hoten: byLabel(['họ và tên', 'họ tên', 'tôi là', 'tên tôi']),
+    tendn: byLabel(['tên doanh nghiệp', 'tên công ty', 'tên hộ', 'tên dn', 'doanh nghiệp', 'công ty']),
+    diachi: byLabel(['địa chỉ', 'trụ sở', 'số nhà']),
+    vonso: parseMoney(byLabel(['vốn điều lệ', 'vốn đầu tư', 'vốn kinh doanh', 'vốn'])) || parseMoney(text),
+  };
+
+  const fillFirst = (pred, value) => {
+    if (!value) return false;
+    const inputs = [...document.getElementById('modal').querySelectorAll('input,select,textarea')];
+    for (const inp of inputs) {
+      if (!inp.name || inp.type === 'radio' || inp.type === 'checkbox') continue;
+      if (pred(inp.name) && !inp.value) {
+        inp.value = value;
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+        return true;
+      }
+    }
+    return false;
+  };
+  const N = list => n => list.includes(n);
+  const filled = [];
+  if (fillFirst(N(['ho_ten', 'ho_ten_chu', 'chu_ten', 'dd_ho_ten', 'dd_moi_ho_ten']), vals.hoten)) filled.push('họ tên');
+  if (fillFirst(n => /cccd/.test(n), vals.cccd)) filled.push('CCCD');
+  if (fillFirst(n => /ngay_sinh|_ns$|^chu_ns$/.test(n), vals.ngaysinh)) filled.push('ngày sinh');
+  if (fillFirst(n => /dien_thoai|tel/.test(n), vals.phone)) filled.push('điện thoại');
+  if (fillFirst(n => /email/.test(n), vals.email)) filled.push('email');
+  if (fillFirst(N(['ten_dn_viet', 'ten_cty', 'ten_dn', 'hkd_ten']), vals.tendn)) filled.push('tên DN');
+  if (fillFirst(N(['so_nha', 'ts_so_nha', 'dc_so_nha', 'hkd_dc', 'dc', 'dd_moi_dc']), vals.diachi)) filled.push('địa chỉ');
+  if (vals.vonso && fillFirst(n => n === 'von_so', dinhDangSo(vals.vonso))) filled.push('vốn');
+
+  const res = document.getElementById('qf-result');
+  if (res) res.innerHTML = filled.length
+    ? '✓ Đã điền: ' + filled.join(', ') + '. <strong>Hãy kiểm tra lại trước khi tạo văn bản.</strong>'
+    : '⚠️ Chưa tách được trường nào. Thử ghi rõ nhãn, ví dụ "CCCD: 0123..." hoặc "vốn 1 tỷ".';
+}
+
+// Gắn auto: số tiền -> chữ, và định dạng số có dấu chấm
+function bindMoneyFields() {
+  const modal = document.getElementById('modal');
+  const vs = modal.querySelector('[name="von_so"]');
+  const vc = modal.querySelector('[name="von_chu"]');
+  if (vc) vc.addEventListener('input', () => { vc.dataset.touched = '1'; });
+  if (vs) {
+    vs.addEventListener('input', () => {
+      if (vc && !vc.dataset.touched) vc.value = docSoTienVN(vs.value);
+    });
+    vs.addEventListener('blur', () => { vs.value = dinhDangSo(vs.value); });
+  }
 }
 
 async function generateDoc() {

@@ -16,6 +16,17 @@ Khi người dùng nhập thông tin trong form và bấm **"Tạo văn bản Wo
 Thông tin dùng chung (họ tên, CCCD, ngày sinh, cơ quan…) được lưu `localStorage`
 và **tự điền chéo** sang các mẫu khác.
 
+### Điền nhanh (rule-based, không cần AI)
+
+Mỗi biểu mẫu có ô **"⚡ Điền nhanh"**: dán một đoạn thông tin (vd
+`Họ tên NGUYỄN VĂN A; CCCD 012345678901; sinh 01/01/1990; ĐT 09...; vốn 1 tỷ`),
+hệ thống dùng regex tự tách họ tên / CCCD / ngày sinh / điện thoại / email /
+tên DN / địa chỉ / vốn rồi điền vào form. Toàn bộ chạy **offline trên trình
+duyệt**, dữ liệu cá nhân không gửi đi đâu. Ngoài ra:
+
+- Gõ **vốn bằng số** → tự sinh **vốn bằng chữ** ("Một tỷ đồng").
+- Tự **định dạng số tiền** có dấu chấm phân cách khi rời ô.
+
 > Tính năng cần chạy qua web (http/https hoặc Vercel), không chạy khi mở trực
 > tiếp `index.html` bằng `file://` (do trình duyệt chặn `fetch`).
 
