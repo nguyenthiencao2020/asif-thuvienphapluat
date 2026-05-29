@@ -1078,7 +1078,7 @@ function getMau7HTML() {
   <table class="mini-table">
     <thead><tr><th>STT</th><th>Họ và tên CĐ</th><th>Số CCCD</th><th>Số CP đăng ký mua</th><th>Giá trị (VNĐ)</th><th>Tỷ lệ (%)</th></tr></thead>
     <tbody>
-      ${[1,2,3].map(i=>`<tr><td style="text-align:center">${i}</td><td><input style="text-transform:uppercase"></td><td><input maxlength="12" style="width:110px"></td><td><input placeholder="0"></td><td><input placeholder="0"></td><td><input placeholder="0%"></td></tr>`).join('')}
+      ${[1,2,3].map(i=>`<tr><td style="text-align:center">${i}</td><td><input name="cd${i}_ten" style="text-transform:uppercase"></td><td><input name="cd${i}_cccd" maxlength="12" style="width:110px"></td><td><input name="cd${i}_cp" placeholder="0"></td><td><input name="cd${i}_gt" placeholder="0"></td><td><input name="cd${i}_tyle" placeholder="0%"></td></tr>`).join('')}
     </tbody>
   </table>`;
 }
@@ -1322,6 +1322,30 @@ function collectFormData() {
     const v = (inp.value || '').trim();
     if (v) data[inp.name] = v;   // bỏ trống -> giữ dòng "……" trong mẫu
   });
+  // Dựng các mảng cho vòng lặp bảng trong template
+  const g = k => (data[k] || '').trim();
+  // Ngành, nghề kinh doanh (tên có thể đặt nganh{i} hoặc ng{i})
+  const nganh = [];
+  for (let i = 1; i <= 30; i++) {
+    const ten = g('nganh' + i) || g('ng' + i), ma = g('ma' + i);
+    if (ten || ma) nganh.push({ stt: nganh.length + 1, ten, ma,
+      chinh: data['chinh' + i] === 'X' ? 'X' : '' });
+  }
+  if (nganh.length) data.nganh = nganh;
+  // Danh sách thành viên (Mẫu 6)
+  const tv = [];
+  for (let i = 1; i <= 30; i++) {
+    if (g('tv' + i + '_ten')) tv.push({ stt: tv.length + 1, ten: g('tv' + i + '_ten'),
+      cccd: g('tv' + i + '_cccd'), von: g('tv' + i + '_von'), tyle: g('tv' + i + '_phan_tram') });
+  }
+  if (tv.length) data.thanhvien = tv;
+  // Danh sách cổ đông sáng lập (Mẫu 7)
+  const cd = [];
+  for (let i = 1; i <= 30; i++) {
+    if (g('cd' + i + '_ten')) cd.push({ stt: cd.length + 1, ten: g('cd' + i + '_ten'),
+      cccd: g('cd' + i + '_cccd'), cp: g('cd' + i + '_cp'), tyle: g('cd' + i + '_tyle') });
+  }
+  if (cd.length) data.codong = cd;
   return data;
 }
 
